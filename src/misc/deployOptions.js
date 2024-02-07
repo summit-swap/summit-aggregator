@@ -143,7 +143,14 @@ module.exports = {
   },
   fantom: {
     adapterWhitelist: ["BeethovenxAdapter", "SpookySwapAdapter", "SpiritSwapAdapter"],
-    hopTokens: [ftm.assets.WFTM, ftm.assets.USDC, ftm.assets.USDT, ftm.assets.DAI],
+    hopTokens: [
+      ftm.assets.WFTM,
+      ftm.assets.USDC_AXL,
+      ftm.assets.USDT_AXL,
+      ftm.assets.DAI_AXL,
+      ftm.assets.USDC_LZ,
+      ftm.assets.USDT_LZ,
+    ],
     wnative: ftm.assets.WFTM,
   },
 };
