@@ -1,4 +1,4 @@
-const { deploySummitWrapRouter } = require('../../utils')
+const { deploySummitWrapRouter } = require("../../utils");
 
-const networkName = 'avalanche'
-module.exports = deploySummitWrapRouter(networkName, 'MinimalSummitRouter')
+const networkName = "avalanche";
+module.exports = deploySummitWrapRouter(networkName, "MinimalSummitRouter");

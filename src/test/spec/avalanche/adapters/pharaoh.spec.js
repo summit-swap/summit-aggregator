@@ -36,35 +36,29 @@ describe("SummitAdapter - Pharaoh", function () {
     });
   });
 
-  it('Query returns zero if tokens not found', async () => {
-      const supportedTkn = tkns.USDC
-      ate.checkQueryReturnsZeroForUnsupportedTkns(supportedTkn)
-  })
+  it("Query returns zero if tokens not found", async () => {
+    const supportedTkn = tkns.USDC;
+    ate.checkQueryReturnsZeroForUnsupportedTkns(supportedTkn);
+  });
 
-  it('Swapping too much returns zero', async () => {
-      const dy = await ate.Adapter.query(
-          ethers.utils.parseUnits('10000', 18),
-          tkns.USDC.address,
-          tkns.WAVAX.address
-      )
-      expect(dy).to.eq(0)
-  })
+  it("Swapping too much returns zero", async () => {
+    const dy = await ate.Adapter.query(ethers.utils.parseUnits("10000", 18), tkns.USDC.address, tkns.WAVAX.address);
+    expect(dy).to.eq(0);
+  });
 
-  it('Adapter can only spend max-gas + buffer', async () => {
-      const gasBuffer = ethers.BigNumber.from('70000')
-      const quoterGasLimit = await ate.Adapter.quoterGasLimit()
-      const dy = await ate.Adapter.estimateGas.query(
-          ethers.utils.parseUnits('2000', 6),
-          tkns.USDC.address,
-          tkns.WAVAX.address
-      )
-      expect(dy).to.lt(quoterGasLimit.add(gasBuffer))
-  })
+  it("Adapter can only spend max-gas + buffer", async () => {
+    const gasBuffer = ethers.BigNumber.from("70000");
+    const quoterGasLimit = await ate.Adapter.quoterGasLimit();
+    const dy = await ate.Adapter.estimateGas.query(
+      ethers.utils.parseUnits("2000", 6),
+      tkns.USDC.address,
+      tkns.WAVAX.address
+    );
+    expect(dy).to.lt(quoterGasLimit.add(gasBuffer));
+  });
 
-  it('Gas-estimate is between max-gas-used and 110% max-gas-used', async () => {
-      const options = [
-          [ '10', tkns.USDC, tkns.WAVAX ]
-      ]
-      await ate.checkGasEstimateIsSensible(options)
-  })
+  it("Gas-estimate is between max-gas-used and 110% max-gas-used", async () => {
+    const options = [["10", tkns.USDC, tkns.WAVAX]];
+    await ate.checkGasEstimateIsSensible(options);
+  });
 });

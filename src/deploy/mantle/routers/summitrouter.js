@@ -1,4 +1,4 @@
-const { deployRouter } = require('../../utils')
+const { deployRouter } = require("../../utils");
 
-const networkName = 'mantle'
-module.exports = deployRouter(networkName)
+const networkName = "mantle";
+module.exports = deployRouter(networkName);

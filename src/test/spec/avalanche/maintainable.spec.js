@@ -14,10 +14,9 @@ async function getDummyMaintainable() {
     DummyMaintainable,
     deployer,
   };
-};
+}
 
 describe("Maintainable", () => {
-
   let genNewAccount;
   let owner;
   let nonOwner;
