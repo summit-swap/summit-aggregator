@@ -1,4 +1,11 @@
-const { avalanche: ava, dogechain: dog, arbitrum: arb, optimism: opt, mantle: mnt } = require("./addresses.json");
+const {
+  avalanche: ava,
+  dogechain: dog,
+  arbitrum: arb,
+  optimism: opt,
+  mantle: mnt,
+  fantom: ftm,
+} = require("./addresses.json");
 
 module.exports = {
   avalanche: {
@@ -133,5 +140,10 @@ module.exports = {
       // opt.assets.BOB,
     ],
     wnative: opt.assets.WETH,
+  },
+  fantom: {
+    adapterWhitelist: ["BeethovenxAdapter", "SpookySwapAdapter", "SpiritSwapAdapter"],
+    hopTokens: [ftm.assets.WFTM, ftm.assets.USDC, ftm.assets.USDT, ftm.assets.DAI],
+    wnative: ftm.assets.WFTM,
   },
 };

@@ -25,6 +25,7 @@ const AURORA_RPC = getEnvValSafe("AURORA_RPC");
 const DOGECHAIN_RPC = getEnvValSafe("DOGECHAIN_RPC");
 const MANTLE_RPC = getEnvValSafe("MANTLE_RPC");
 const BLASTTEST_RPC = getEnvValSafe("BLASTTEST_RPC");
+const FANTOM_RPC = getEnvValSafe("FANTOM_RPC");
 const AVALANCHE_PK_DEPLOYER = getEnvValSafe("AVALANCHE_PK_DEPLOYER");
 const ARBITRUM_PK_DEPLOYER = getEnvValSafe("ARBITRUM_PK_DEPLOYER");
 const OPTIMISM_PK_DEPLOYER = getEnvValSafe("OPTIMISM_PK_DEPLOYER");
@@ -32,6 +33,7 @@ const AURORA_PK_DEPLOYER = getEnvValSafe("AURORA_PK_DEPLOYER");
 const DOGECHAIN_PK_DEPLOYER = getEnvValSafe("DOGECHAIN_PK_DEPLOYER");
 const MANTLE_PK_DEPLOYER = getEnvValSafe("MANTLE_PK_DEPLOYER");
 const BLASTTEST_PK_DEPLOYER = getEnvValSafe("BLASTTEST_PK_DEPLOYER");
+const FANTOM_PK_DEPLOYER = getEnvValSafe("FANTOM_PK_DEPLOYER");
 const ETHERSCAN_API_KEY = getEnvValSafe("ETHERSCAN_API_KEY", false);
 
 function getEnvValSafe(key, required = true) {
@@ -125,6 +127,11 @@ module.exports = {
       chainId: 168587773,
       url: BLASTTEST_RPC,
       accounts: [BLASTTEST_PK_DEPLOYER],
+    },
+    fantom: {
+      chainId: 250,
+      url: FANTOM_RPC,
+      accounts: [FANTOM_PK_DEPLOYER],
     },
   },
   paths: {
