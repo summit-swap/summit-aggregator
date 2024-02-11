@@ -156,6 +156,11 @@ module.exports.injectFunds = async (sender, reciever, amount) => {
 };
 
 const _setHardhatNetwork = async ({ forkBlockNumber, chainId, rpcUrl }) => {
+  console.log("Fork network", {
+    forkBlockNumber,
+    chainId,
+    rpcUrl,
+  });
   return network.provider.request({
     method: "hardhat_reset",
     params: [

@@ -96,13 +96,13 @@ interface ISummitRouter {
         uint256 _fee
     ) external;
 
-    function swapNoSplitFromAVAX(
+    function swapNoSplitFromNATIVE(
         Trade calldata _trade,
         address _to,
         uint256 _fee
     ) external payable;
 
-    function swapNoSplitToAVAX(
+    function swapNoSplitToNATIVE(
         Trade calldata _trade,
         address _to,
         uint256 _fee
@@ -118,7 +118,7 @@ interface ISummitRouter {
         bytes32 _s
     ) external;
 
-    function swapNoSplitToAVAXWithPermit(
+    function swapNoSplitToNATIVEWithPermit(
         Trade calldata _trade,
         address _to,
         uint256 _fee,

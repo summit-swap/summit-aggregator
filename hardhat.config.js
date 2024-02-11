@@ -26,6 +26,7 @@ const DOGECHAIN_RPC = getEnvValSafe("DOGECHAIN_RPC");
 const MANTLE_RPC = getEnvValSafe("MANTLE_RPC");
 const BLASTTEST_RPC = getEnvValSafe("BLASTTEST_RPC");
 const FANTOM_RPC = getEnvValSafe("FANTOM_RPC");
+
 const AVALANCHE_PK_DEPLOYER = getEnvValSafe("AVALANCHE_PK_DEPLOYER");
 const ARBITRUM_PK_DEPLOYER = getEnvValSafe("ARBITRUM_PK_DEPLOYER");
 const OPTIMISM_PK_DEPLOYER = getEnvValSafe("OPTIMISM_PK_DEPLOYER");
@@ -34,7 +35,9 @@ const DOGECHAIN_PK_DEPLOYER = getEnvValSafe("DOGECHAIN_PK_DEPLOYER");
 const MANTLE_PK_DEPLOYER = getEnvValSafe("MANTLE_PK_DEPLOYER");
 const BLASTTEST_PK_DEPLOYER = getEnvValSafe("BLASTTEST_PK_DEPLOYER");
 const FANTOM_PK_DEPLOYER = getEnvValSafe("FANTOM_PK_DEPLOYER");
+
 const ETHERSCAN_API_KEY = getEnvValSafe("ETHERSCAN_API_KEY", false);
+const FANTOM_API_KEY = getEnvValSafe("FANTOM_API_KEY");
 
 function getEnvValSafe(key, required = true) {
   const endpoint = process.env[key];
@@ -63,25 +66,15 @@ module.exports = {
     },
   },
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY,
-    customChains: [
-      {
-        network: "mantle",
-        chainId: 5000,
-        urls: {
-          apiURL: "https://explorer.mantle.xyz/api",
-          browserURL: "https://explorer.mantle.xyz",
-        },
-      },
-    ],
+    apiKey: FANTOM_API_KEY,
   },
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
-      chainId: 43114,
+      chainId: 250,
       forking: {
-        url: AVALANCHE_RPC,
-        blockNumber: 18154644,
+        url: FANTOM_RPC,
+        blockNumber: 75255561,
       },
       accounts: {
         accountsBalance: "10000000000000000000000000",

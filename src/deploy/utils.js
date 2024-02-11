@@ -41,7 +41,7 @@ module.exports.deploySummitWrapRouter = (networkName, routerDeploymentName) => {
     const { deployer } = await getNamedAccounts();
     if (!deployOptions) throw new Error(`Can't find deployOptions for network: "${networkName}"`);
 
-    router = await deployments.get(routerName);
+    router = await deployments.get("SummitRouter");
     const deployArgs = [router.address];
     console.log("SummitWrapRouter deployment arguments: ", deployArgs);
 
@@ -78,6 +78,29 @@ module.exports.deployRouter = (networkName) => {
     await deployFn({ getNamedAccounts, deployments });
   };
   exportEnv.tags = ["router", networkName, concatTags("router", networkName)];
+  exportEnv.dependencies = deployOptions.adapterWhitelist;
+
+  return exportEnv;
+};
+
+module.exports.deployOracle = (networkName) => {
+  const deployOptions = require("../misc/deployOptions")[networkName];
+  const exportEnv = async ({ getNamedAccounts, deployments }) => {
+    if (!deployOptions) throw new Error(`Can't find deployOptions for network: "${networkName}"`);
+
+    const { oracle, wnative } = deployOptions;
+
+    router = await deployments.get("SummitRouter");
+    const deployArgs = [router.address, oracle.stable, wnative];
+    console.log("SummitOracle deployment arguments: ", deployArgs);
+
+    const name = "SummitOracle";
+    const contractName = "SummitOracle";
+    const optionalArgs = { gas: 4000000 };
+    const deployFn = _deployContract(name, contractName, deployArgs, optionalArgs);
+    await deployFn({ getNamedAccounts, deployments });
+  };
+  exportEnv.tags = ["oracle", networkName, concatTags("oracle", networkName)];
   exportEnv.dependencies = deployOptions.adapterWhitelist;
 
   return exportEnv;

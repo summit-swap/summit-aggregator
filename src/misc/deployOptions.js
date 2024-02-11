@@ -59,11 +59,17 @@ module.exports = {
       ava.assets.USDt,
     ],
     wnative: ava.assets.WAVAX,
+    oracle: {
+      stable: ava.assets.USDCe,
+    },
   },
   dogechain: {
     adapterWhitelist: ["DogeSwapAdapter", "KibbleSwapAdapter", "YodeSwapAdapter", "QuickswapAdapter"],
     hopTokens: [dog.assets.ETH, dog.assets.USDC, dog.assets.USDT, dog.assets.WWDOGE],
     wnative: dog.assets.WWDOGE,
+    oracle: {
+      stable: dog.assets.USDC,
+    },
   },
   mantle: {
     adapterWhitelist: ["WMNTAdapter", "MerchantMoeAdapter", "AgniAdapter", "FusionAdapter"],
@@ -77,6 +83,9 @@ module.exports = {
       mnt.assets.WETH,
     ],
     wnative: mnt.assets.WMNT,
+    oracle: {
+      stable: mnt.assets.MUSD,
+    },
   },
   arbitrum: {
     adapterWhitelist: [
@@ -106,6 +115,9 @@ module.exports = {
     ],
     hopTokens: [arb.assets.WETH, arb.assets.WBTC, arb.assets.USDC, arb.assets.USDT, arb.assets.DAI],
     wnative: arb.assets.WETH,
+    oracle: {
+      stable: arb.assets.USDC,
+    },
   },
   optimism: {
     adapterWhitelist: [
@@ -140,6 +152,9 @@ module.exports = {
       // opt.assets.BOB,
     ],
     wnative: opt.assets.WETH,
+    oracle: {
+      stable: opt.assets.USDC,
+    },
   },
   fantom: {
     adapterWhitelist: ["BeethovenxAdapter", "SpookySwapAdapter", "SpiritSwapAdapter"],
@@ -152,5 +167,8 @@ module.exports = {
       ftm.assets.USDT_LZ,
     ],
     wnative: ftm.assets.WFTM,
+    oracle: {
+      stable: ftm.assets.USDC_LZ,
+    },
   },
 };

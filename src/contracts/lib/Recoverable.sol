@@ -28,7 +28,7 @@ abstract contract Recoverable is Maintainable {
      * @notice Recover native asset from contract
      * @param _amount amount
      */
-    function recoverNative(uint _amount) external onlyMaintainer {
+    function recoverNATIVE(uint _amount) external onlyMaintainer {
         require(_amount > 0, "Nothing to recover");
         payable(msg.sender).transfer(_amount);
         emit Recovered(address(0), _amount);

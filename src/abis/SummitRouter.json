@@ -723,7 +723,7 @@
         "type": "uint256"
       }
     ],
-    "name": "swapNoSplitFromAVAX",
+    "name": "swapNoSplitFromNATIVE",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -833,7 +833,7 @@
         "type": "bytes32"
       }
     ],
-    "name": "swapNoSplitToAVAXWithPermit",
+    "name": "swapNoSplitToNATIVEWithPermit",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
