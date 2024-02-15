@@ -49,32 +49,75 @@ contract SummitOracle is Maintainable, Recoverable {
       WNATIVE = IERC20(_wNative);
     }
 
+    function _getDecimals(address _token) internal view returns (uint8) {
+      if (_token == address(0)) return 18;
+      try IERC20(_token).decimals() returns (uint8 dec) {
+        return dec;
+      } catch {
+        return 18;
+      }
+    }
+    function _getAllowance(address _user, address _token) internal view returns (uint256) {
+      if (_user == address(0)) return 0;
+      if (_token == address(0)) return _user.balance;
+      return IERC20(_token).allowance(_user, address(ROUTER));
+    }
+    function _getBalance(address _user, address _token) internal view returns (uint256) {
+      if (_user == address(0)) return 0;
+      if (_token == address(0)) return _user.balance;
+      return IERC20(_token).balanceOf(_user);
+    }
+
     function getPrice(address _token) public view returns (uint256, uint256) {
-      uint256 decimals = IERC20(_token).decimals();
-      FormattedOffer memory formattedOffer = ROUTER.findBestPath(
+      uint8 decimals = _getDecimals(_token);
+
+      try ROUTER.findBestPath(
         10 ** decimals,
-        _token,
+        _token == address(0) ? address(WNATIVE) : _token,
         address(STABLE),
         3
-      );
-      uint256 amountOut = formattedOffer.getAmountOut();
-      return (amountOut, STABLE.decimals());
+      ) returns (FormattedOffer memory formattedOffer) {
+        return (formattedOffer.getAmountOut(), STABLE.decimals());
+      } catch {
+        return (0, STABLE.decimals());
+      }
     }
 
     struct TokenData {
+      address tokenAddress;
+      uint256 decimals;
       uint256 userAllowance;
       uint256 userBalance;
       uint256 price;
       uint256 priceDecimals;
     }
 
-    function getTokenData(address _user, address _token) public view returns (TokenData memory data) {
+    function getTokenData(address _user, address _token) public view returns (TokenData memory token) {
       (uint256 price, uint256 priceDecimals) = getPrice(_token);
-      data = TokenData({
-        userAllowance: IERC20(_token).allowance(_user, address(ROUTER)),
-        userBalance: IERC20(_token).balanceOf(_user),
+      token = TokenData({
+        tokenAddress: _token,
+        decimals: _getDecimals(_token),
         price: price,
-        priceDecimals: priceDecimals
+        priceDecimals: priceDecimals,
+        userAllowance: _getAllowance(_user, _token),
+        userBalance: _getBalance(_user, _token)
       });
     }
+
+    function getTokenAndSwapData(address _user, uint256 _amountIn, address _tokenIn, address _tokenOut, uint256 _maxSteps)
+      public view
+      returns (TokenData memory token, FormattedOffer memory offer)
+    {
+      return (
+        getTokenData(_user, _tokenIn),
+        ROUTER.findBestPath(
+          _amountIn,
+          _tokenIn == address(0) ? address(WNATIVE) : _tokenIn,
+          _tokenOut == address(0) ? address(WNATIVE) : _tokenOut,
+          _maxSteps
+        )
+      );
+    }
+
+
 }
