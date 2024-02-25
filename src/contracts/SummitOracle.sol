@@ -48,7 +48,16 @@ contract SummitOracle is Maintainable, Recoverable {
     function setWNative(address _wNative) public onlyMaintainer {
       WNATIVE = IERC20(_wNative);
     }
+    
 
+    function _getSymbol(address _token) internal view returns (string memory) {
+      if (_token == address(0)) return "";
+      try IERC20(_token).symbol() returns (string memory sym) {
+        return sym;
+      } catch {
+        return "";
+      }
+    }
     function _getDecimals(address _token) internal view returns (uint8) {
       if (_token == address(0)) return 18;
       try IERC20(_token).decimals() returns (uint8 dec) {
@@ -68,48 +77,45 @@ contract SummitOracle is Maintainable, Recoverable {
       return IERC20(_token).balanceOf(_user);
     }
 
-    function getPrice(address _token) public view returns (uint256, uint256) {
-      uint8 decimals = _getDecimals(_token);
-
+    function getPrice10Stable(address _token) public view returns (uint256) {
       try ROUTER.findBestPath(
-        10 ** decimals,
-        _token == address(0) ? address(WNATIVE) : _token,
+        10 ** STABLE.decimals(),
         address(STABLE),
+        _token == address(0) ? address(WNATIVE) : _token,
         3
       ) returns (FormattedOffer memory formattedOffer) {
-        return (formattedOffer.getAmountOut(), STABLE.decimals());
+        return formattedOffer.getAmountOut();
       } catch {
-        return (0, STABLE.decimals());
+        return 0;
       }
     }
 
     struct TokenData {
       address tokenAddress;
+      string symbol;
       uint256 decimals;
       uint256 userAllowance;
       uint256 userBalance;
       uint256 price;
-      uint256 priceDecimals;
     }
 
     function getTokenData(address _user, address _token) public view returns (TokenData memory token) {
-      (uint256 price, uint256 priceDecimals) = getPrice(_token);
+      uint256 price = getPrice10Stable(_token);
       token = TokenData({
         tokenAddress: _token,
+        symbol: _getSymbol(_token),
         decimals: _getDecimals(_token),
         price: price,
-        priceDecimals: priceDecimals,
         userAllowance: _getAllowance(_user, _token),
         userBalance: _getBalance(_user, _token)
       });
     }
 
-    function getTokenAndSwapData(address _user, uint256 _amountIn, address _tokenIn, address _tokenOut, uint256 _maxSteps)
+    function getSwapData(uint256 _amountIn, address _tokenIn, address _tokenOut, uint256 _maxSteps)
       public view
-      returns (TokenData memory token, FormattedOffer memory offer)
+      returns (FormattedOffer memory offer)
     {
       return (
-        getTokenData(_user, _tokenIn),
         ROUTER.findBestPath(
           _amountIn,
           _tokenIn == address(0) ? address(WNATIVE) : _tokenIn,
