@@ -17,7 +17,8 @@ interface ISummitPoints {
 
   function setPointsAdapter(address _pointsAdapter) external;
   function setReferralsContract(address _referrals) external;
-  function getPoints(address _add) external view returns (uint256 points, uint8 level);
+  function getPoints(address _add) external view returns (uint256 selfPoints, uint256 refPoints);
+  function getPointsAndReferralData(address _add) external view returns (uint256 selfPoints, uint256 refPoints, uint256 refCount, uint8 level);
   function addPoints(address _add, uint256 _amount) external;
   function transferPoints(address _from, address _to) external;
   function setDelegate(address _user, address _delegate) external;

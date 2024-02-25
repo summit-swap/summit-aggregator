@@ -27,7 +27,8 @@ contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
 
   address public POINTS_ADAPTER;
   address public REFERRALS;
-  mapping(address => uint256) public POINTS;
+  mapping(address => uint256) public SELF_POINTS;
+  mapping(address => uint256) public REF_POINTS;
   mapping(address => address) public DELEGATE;
 
   error ZeroAddress();
@@ -43,12 +44,27 @@ contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
     REFERRALS = _referrals;
   }
 
-  function getPoints(address _add) override public view returns (uint256 points, uint8 level) {
+  function getPoints(address _add) override public view returns (uint256 selfPoints, uint256 refPoints) {
     return (
-      POINTS[_add],
-      REFERRALS == address(0) ?
-        0 :
-        ISummitReferrals(REFERRALS).getReferrerLevel(POINTS[_add])
+      SELF_POINTS[_add],
+      REF_POINTS[_add],
+    );
+  }
+
+  function getPointsAndReferralData(address _add) override public view returns (uint256 selfPoints, uint256 refPoints, uint256 refCount, uint8 level) {
+    if (REFERRALS == address(0)) {
+      return (
+        SELF_POINTS[_add],
+        REF_POINTS[_add],
+        0,
+        0,
+      );
+    }
+    return (
+      SELF_POINTS[_add],
+      REF_POINTS[_add],
+      ISummitReferrals(REFERRALS).getRefsCount(_add),
+      ISummitReferrals(REFERRALS).getReferrerLevel(_add, SELF_POINTS[_add], REF_POINTS[_add])
     );
   }
 
@@ -56,22 +72,25 @@ contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
     if (msg.sender != POINTS_ADAPTER) revert NotPermitted();
     emit AddedPoints(_add, _amount);
 
-    address referrer = REFERRALS == address(0) ? address(0) : ISummitReferrals(REFERRALS).getReferrer(_add);
-    uint256 referrerMultiplier = ISummitReferrals(REFERRALS).getReferrerMultiplier(POINTS[referrer]);
+    if (REFERRALS == address(0)) {
+      SELF_POINTS[_add] += _amount;
+      return;
+    }
 
-    POINTS[_add] += _amount + (referrer != address(0) ? (_amount * 10200 / 10000) : 0);
-    
-    if (referrer != address(0) && referrerMultiplier > 0) {
-      POINTS[referrer] = _amount * referrerMultiplier / 10000;
+    SELF_POINTS[_add] += ISummitReferrals(REFERRALS).getAmountWithReferredBonus(_add, _amount);
+
+    (address referrer, uint256 refPoints) = ISummitReferrals(REFERRALS).getReferrerAndPoints(_add);
+    if (refPoints > 0) {
+      REF_POINTS[referrer] += refPoints;
     }
   }
 
   function transferPoints(address _from, address _to) override public {
     if (_to == address(0)) revert ZeroAddress();
     if (_from != msg.sender && DELEGATE[_from] != msg.sender) revert NotPermitted();
-    uint256 amount = POINTS[_from];
-    POINTS[_from] = 0;
-    POINTS[_to] = amount;
+    uint256 amount = SELF_POINTS[_from];
+    SELF_POINTS[_from] = 0;
+    SELF_POINTS[_to] = amount;
     emit TransferredPoints(msg.sender, _from, _to, amount);
   }
 
