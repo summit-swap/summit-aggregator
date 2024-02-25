@@ -34,15 +34,21 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     uint256[] public LEVEL_SELF_POINTS_REQ = [0, 100e18, 1000e18, 2000e18, 5000e18, 25000e18];
     uint256[] public LEVEL_REFS_REQ = [0, 0, 3, 5, 10, 25];
 
-    uint256[] public LEVEL_MULT_REWARD = [0, 0, 400, 500, 700, 1500];
+    uint256[] public LEVEL_MULT_REWARD = [0, 200, 400, 500, 700, 1500];
 
-    uint256 public HasReferrerBonusMult = 400;
+    uint256 public BONUS_FOR_BEING_REFERRED = 200;
     mapping(address => address) public REFERRER;
     mapping(address => uint256) public REF_COUNT;
+    mapping(address => uint8) public REF_BOOST_LEVEL;
+    mapping(string => address) public REF_CODE;
+    mapping(address => string) public REF_CODE_INV;
+    uint256 GLOBAL_BOOST;
 
+    error MissingReferral();
     error SelfReferral();
     error ReciprocalReferral();
     error LengthMismatch();
+    error CodeNotAvailable();
 
 
     function setPointsContract(address _pointsContract) override public onlyMaintainer {
@@ -50,20 +56,46 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
       SUMMIT_POINTS = _pointsContract;
     }
 
-    function setReferrer(address _referrer) override public {
-        if(_referrer == msg.sender) revert SelfReferral();
-        if(REFERRER[_referrer] == msg.sender) revert ReciprocalReferral();
-        if(REFERRER[REFERRER[_referrer]] == msg.sender) revert ReciprocalReferral();
+    function stringEquals(string memory s1, string memory s2) internal pure returns(bool) {
+        return keccak256(abi.encode(s1)) == keccak256(abi.encode(s2));
+    }
 
-        // Remove from prev referrer count
-        if (REFERRER[msg.sender] != address(0) && REF_COUNT[REFERRER[msg.sender]] > 1) {
-          REF_COUNT[REFERRER[msg.sender]] -= 1;
-        }
+    function setReferrer(address _referrer, string memory _code) override public {
+      // Get referrer from code or argument
+      address referrer = _referrer == address(0) ? REF_CODE[_code] : _referrer;
 
-        REFERRER[msg.sender] = _referrer;
-        REF_COUNT[_referrer] += 1;
+      // Checks
+      if (referrer == address(0)) revert MissingReferral();
+      if(referrer == msg.sender) revert SelfReferral();
+      if(REFERRER[referrer] == msg.sender) revert ReciprocalReferral();
+      if(REFERRER[REFERRER[referrer]] == msg.sender) revert ReciprocalReferral();
 
-        emit UpdatedReferrer(msg.sender, _referrer);
+      // Remove from prev referrer count
+      if (REFERRER[msg.sender] != address(0) && REF_COUNT[REFERRER[msg.sender]] > 1) {
+        REF_COUNT[REFERRER[msg.sender]] -= 1;
+      }
+
+      REFERRER[msg.sender] = referrer;
+      REF_COUNT[referrer] += 1;
+
+      emit UpdatedReferrer(msg.sender, referrer);
+    }
+
+    function setReferralCode(string memory _code) override public {
+      if (REF_CODE[_code] != address(0)) revert CodeNotAvailable();
+      REF_CODE[REF_CODE_INV[msg.sender]] = address(0);
+      REF_CODE_INV[msg.sender] = _code;
+      REF_CODE[_code] = msg.sender;
+    }
+
+    function boostReferrer(address _referrer, uint8 _boostLevel) override public onlyMaintainer {
+      REF_BOOST_LEVEL[_referrer] = _boostLevel;
+      emit BoostedReferrer(_referrer, _boostLevel);
+    }
+
+    function setGlobalBoost(uint256 _boost) override public onlyMaintainer {
+      GLOBAL_BOOST = _boost;
+      emit UpdatedGlobalBoost(_boost);
     }
 
     function setLevelData(uint256[] memory _refPointsReq, uint256[] memory _selfPointsReq, uint256[] memory _refsReq, uint256[] memory _multRew, uint256 _hasReferrerBonusMult) override public onlyMaintainer {
@@ -72,7 +104,7 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
       LEVEL_SELF_POINTS_REQ = _selfPointsReq;
       LEVEL_REFS_REQ = _refsReq;
       LEVEL_MULT_REWARD = _multRew;
-      HasReferrerBonusMult = _hasReferrerBonusMult;
+      BONUS_FOR_BEING_REFERRED = _hasReferrerBonusMult;
       emit UpdatedLevelData(_refPointsReq, _selfPointsReq, _refsReq, _multRew, _hasReferrerBonusMult);
     }
 
@@ -81,6 +113,7 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     }
 
     function getReferrerLevel(address _add) override public view returns (uint8) {
+      if (REF_BOOST_LEVEL[_add] > 0) return REF_BOOST_LEVEL[_add];
       if (SUMMIT_POINTS == address(0)) return 0;
 
       (uint256 _selfPoints, uint256 _refPoints) = ISummitPoints(SUMMIT_POINTS).getPoints(_add);
@@ -100,7 +133,7 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
 
     function getAmountWithReferredBonus(address _add, uint256 _amount) override public view returns (uint256) {
       if (REFERRER[_add] == address(0)) return _amount;
-      return (_amount * (10000 + HasReferrerBonusMult)) / 10000;
+      return (_amount * (10000 + BONUS_FOR_BEING_REFERRED)) / 10000;
     }
 
     function getReferrerAndPoints(address _add, uint256 _amount) override public view returns (address referrer, uint256 points) {
