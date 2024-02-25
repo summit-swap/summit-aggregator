@@ -14,8 +14,6 @@ import "./interface/ISummitPoints.sol";
 import "./interface/IBlast.sol";
 import "./lib/Maintainable.sol";
 
-
-
 // | Level    | Custom Benefit  | Reward  | Self Volume Required  | Referred Volume Required  | Referral Num Required   |
 // | ---      | ---             | ---     | ---                   | ---                       | ---                     |
 // | Wood     |                 | 0       | 0                     | 0                         | 0                       |
@@ -51,7 +49,7 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     error ReciprocalReferral();
     error LengthMismatch();
     error CodeNotAvailable();
-
+    error MustBeAtLeastBronze();
 
     bool public initialized = false;
     address public governor;
@@ -82,9 +80,12 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
 
       // Checks
       if (referrer == address(0)) revert MissingReferral();
-      if(referrer == msg.sender) revert SelfReferral();
-      if(REFERRER[referrer] == msg.sender) revert ReciprocalReferral();
-      if(REFERRER[REFERRER[referrer]] == msg.sender) revert ReciprocalReferral();
+      if (referrer == msg.sender) revert SelfReferral();
+      if (REFERRER[referrer] == msg.sender) revert ReciprocalReferral();
+      if (REFERRER[REFERRER[referrer]] == msg.sender) revert ReciprocalReferral();
+
+      // Validate referrer is at least bronze level
+      if (getReferrerLevel(referrer) == 0) revert MustBeAtLeastBronze();
 
       // Remove from prev referrer count
       if (REFERRER[msg.sender] != address(0) && REF_COUNT[REFERRER[msg.sender]] > 1) {
@@ -98,7 +99,12 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     }
 
     function setReferralCode(string memory _code) override public {
+      // Validate referrer is at least bronze level
+      if (getReferrerLevel(msg.sender) == 0) revert MustBeAtLeastBronze();
+
+      // If code is already being used
       if (REF_CODE[_code] != address(0)) revert CodeNotAvailable();
+
       REF_CODE[REF_CODE_INV[msg.sender]] = address(0);
       REF_CODE_INV[msg.sender] = _code;
       REF_CODE[_code] = msg.sender;
