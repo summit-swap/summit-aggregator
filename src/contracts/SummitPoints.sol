@@ -10,6 +10,7 @@ pragma experimental ABIEncoderV2;
 
 import "./interface/ISummitRouter.sol";
 import "./interface/ISummitPoints.sol";
+import "./interface/ISummitReferrals.sol";
 import "./interface/IAdapter.sol";
 import "./interface/IERC20.sol";
 import "./interface/IWETH.sol";
@@ -25,6 +26,7 @@ contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
   using EnumerableSet for EnumerableSet.AddressSet;
 
   address public POINTS_ADAPTER;
+  address public REFERRALS;
   mapping(address => uint256) public POINTS;
   mapping(address => address) public DELEGATE;
 
@@ -36,10 +38,32 @@ contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
     POINTS_ADAPTER = _pointsAdapter;
   }
 
+  function setReferralsContract(address _referrals) override public onlyMaintainer {
+    emit UpdatedReferralsContract(_referrals);
+    REFERRALS = _referrals;
+  }
+
+  function getPoints(address _add) override public view returns (uint256 points, uint8 level) {
+    return (
+      POINTS[_add],
+      REFERRALS == address(0) ?
+        0 :
+        ISummitReferrals(REFERRALS).getReferrerLevel(POINTS[_add])
+    );
+  }
+
   function addPoints(address _add, uint256 _amount) override public {
     if (msg.sender != POINTS_ADAPTER) revert NotPermitted();
     emit AddedPoints(_add, _amount);
-    POINTS[_add] += _amount;
+
+    address referrer = REFERRALS == address(0) ? address(0) : ISummitReferrals(REFERRALS).getReferrer(_add);
+    uint256 referrerMultiplier = ISummitReferrals(REFERRALS).getReferrerMultiplier(POINTS[referrer]);
+
+    POINTS[_add] += _amount + (referrer != address(0) ? (_amount * 10200 / 10000) : 0);
+    
+    if (referrer != address(0) && referrerMultiplier > 0) {
+      POINTS[referrer] = _amount * referrerMultiplier / 10000;
+    }
   }
 
   function transferPoints(address _from, address _to) override public {
