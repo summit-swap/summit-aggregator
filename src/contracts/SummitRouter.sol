@@ -16,7 +16,7 @@ import "./lib/SafeERC20.sol";
 import "./lib/Maintainable.sol";
 import "./lib/SummitViewUtils.sol";
 import "./lib/Recoverable.sol";
-import "./lib/SafeERC20.sol";
+import "./interface/ISummitPointsAdapter.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 
@@ -34,18 +34,22 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
     address[] public TRUSTED_TOKENS;
     mapping(address => uint256) public TOKEN_POINT_MULTIPLIERS; // (token amount * tokenPointMultiplier[token]) / 1e12
     address[] public ADAPTERS;
+    address public POINTS_ADAPTER;
+    uint256 public ADAPTER_POINTS_MULTIPLIER = 500;
 
     constructor(
         address[] memory _adapters,
         address[] memory _trustedTokens,
         address _feeClaimer,
-        address _wrapped_native
+        address _wrapped_native,
+        address _pointsAdapter
     ) {
         setAllowanceForWrapping(_wrapped_native);
         setTrustedTokens(_trustedTokens);
         setFeeClaimer(_feeClaimer);
         setAdapters(_adapters);
         WNATIVE = _wrapped_native;
+        POINTS_ADAPTER = _pointsAdapter;
     }
 
     // -- SETTERS --
@@ -70,6 +74,16 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
     function setAdapters(address[] memory _adapters) override public onlyMaintainer {
         emit UpdatedAdapters(_adapters);
         ADAPTERS = _adapters;
+    }
+
+    function setPointsAdapter(address _pointsAdapter) override public onlyMaintainer {
+        emit UpdatedPointsAdapter(_pointsAdapter);
+        POINTS_ADAPTER = _pointsAdapter;
+    }
+
+    function setAdapterPointsMultiplier(uint256 _adapterPointsMultiplier) override public onlyMaintainer {
+        emit UpdatedAdapterPointsMultiplier(_adapterPointsMultiplier);
+        ADAPTER_POINTS_MULTIPLIER = _adapterPointsMultiplier;
     }
 
     function setMinFee(uint256 _fee) override external onlyMaintainer {
@@ -314,6 +328,37 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         return bestOption;
     }
 
+    // -- POINTS --
+    function _applyUserPoints(
+        address _from,
+        address[] memory _path, 
+        uint256[] memory _amounts
+    ) internal returns (uint256) {
+        if (POINTS_ADAPTER == address(0)) return 0;
+
+        uint256 points = 0;
+        for (uint256 i = 0; i < _path.length; i++) {
+            if (points == 0 && TOKEN_POINT_MULTIPLIERS[_path[i]] != 0) {
+                points = TOKEN_POINT_MULTIPLIERS[_path[i]] * _amounts[i] / 1e12;
+            }
+        }
+
+        // TODO: Add points to user
+        if (points > 0 && POINTS_ADAPTER != address(0)) {
+            ISummitPointsAdapter(POINTS_ADAPTER).addPoints(_from, points);
+        }
+
+        return points;
+    }
+
+    function _applyAdapterPoints(
+        address _adapter,
+        uint256 _points
+    ) internal {
+        if (_points == 0 || POINTS_ADAPTER == address(0) || ADAPTER_POINTS_MULTIPLIER == 0) return;
+        ISummitPointsAdapter(POINTS_ADAPTER).addPoints(_adapter, _points * ADAPTER_POINTS_MULTIPLIER / 10000);
+    }
+
     // -- SWAPPERS --
 
     function _swapNoSplit(
@@ -337,19 +382,11 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         }
 
         // Add points to user
-        uint256 points = 0;
-        for (uint256 i = 0; i < _trade.path.length; i++) {
-            if (points == 0 && TOKEN_POINT_MULTIPLIERS[_trade.path[i]] != 0) {
-                points = TOKEN_POINT_MULTIPLIERS[_trade.path[i]] * amounts[i] / 1e12;
-            }
-        }
-
-        // TODO: Add points to user
+        uint256 points = _applyUserPoints(_from, _trade.path, amounts);
 
         require(amounts[amounts.length - 1] >= _trade.amountOut, "SummitRouter: Insufficient output amount");
         for (uint256 i = 0; i < _trade.adapters.length; i++) {
-            // TODO: Add 5% of points to adapters
-
+            _applyAdapterPoints(_trade.adapters[i], points);
 
             // All adapters should transfer output token to the following target
             // All targets are the adapters, expect for the last swap where tokens are sent out
