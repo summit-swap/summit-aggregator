@@ -17,13 +17,11 @@ import "./lib/Maintainable.sol";
 import "./lib/SummitViewUtils.sol";
 import "./lib/Recoverable.sol";
 import "./lib/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 
 contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
     using SafeERC20 for IERC20;
     using OfferUtils for Offer;
-    using EnumerableSet for EnumerableSet.AddressSet;
 
     address public immutable WNATIVE;
     address public constant NATIVE = address(0);
@@ -32,7 +30,6 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
     uint256 public MIN_FEE = 0;
     address public FEE_CLAIMER;
     address[] public TRUSTED_TOKENS;
-    mapping(address => uint256) public TOKEN_POINT_MULTIPLIERS; // (token amount * tokenPointMultiplier[token]) / 1e12
     address[] public ADAPTERS;
 
     constructor(
@@ -57,14 +54,6 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
     function setTrustedTokens(address[] memory _trustedTokens) override public onlyMaintainer {
         emit UpdatedTrustedTokens(_trustedTokens);
         TRUSTED_TOKENS = _trustedTokens;
-    }
-
-    function setTokenPointMultipliers(address[] memory _tokens, uint256[] memory _pointMultipliers) public onlyMaintainer {
-        require(_tokens.length == _pointMultipliers.length, "SummitRouter: Array length mismatch");
-        emit UpdatedTokenPointMultipliers(_tokens, _pointMultipliers);
-        for (uint256 i = 0; i < _tokens.length; i++) {
-            TOKEN_POINT_MULTIPLIERS[_tokens[i]] = _pointMultipliers[i];
-        }
     }
 
     function setAdapters(address[] memory _adapters) override public onlyMaintainer {
@@ -335,22 +324,8 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         for (uint256 i = 0; i < _trade.adapters.length; i++) {
             amounts[i + 1] = IAdapter(_trade.adapters[i]).query(amounts[i], _trade.path[i], _trade.path[i + 1]);
         }
-
-        // Add points to user
-        uint256 points = 0;
-        for (uint256 i = 0; i < _trade.path.length; i++) {
-            if (points == 0 && TOKEN_POINT_MULTIPLIERS[_trade.path[i]] != 0) {
-                points = TOKEN_POINT_MULTIPLIERS[_trade.path[i]] * amounts[i] / 1e12;
-            }
-        }
-
-        // TODO: Add points to user
-
         require(amounts[amounts.length - 1] >= _trade.amountOut, "SummitRouter: Insufficient output amount");
         for (uint256 i = 0; i < _trade.adapters.length; i++) {
-            // TODO: Add 5% of points to adapters
-
-
             // All adapters should transfer output token to the following target
             // All targets are the adapters, expect for the last swap where tokens are sent out
             address targetAddress = i < _trade.adapters.length - 1 ? _trade.adapters[i + 1] : _to;
@@ -362,9 +337,6 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
                 targetAddress
             );
         }
-
-        
-
         emit SummitSwap(_trade.path[0], _trade.path[_trade.path.length - 1], _trade.amountIn, amounts[amounts.length - 1]);
         return amounts[amounts.length - 1];
     }

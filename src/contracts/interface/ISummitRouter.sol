@@ -36,6 +36,7 @@ struct Trade {
 interface ISummitRouter {
 
     event UpdatedTrustedTokens(address[] _newTrustedTokens);
+    event UpdatedTokenPointMultipliers(address[] _tokens, uint256[] _pointMultipliers);
     event UpdatedAdapters(address[] _newAdapters);
     event UpdatedMinFee(uint256 _oldMinFee, uint256 _newMinFee);
     event UpdatedFeeClaimer(address _oldFeeClaimer, address _newFeeClaimer);
