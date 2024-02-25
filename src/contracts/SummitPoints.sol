@@ -10,6 +10,7 @@ pragma experimental ABIEncoderV2;
 
 import "./interface/ISummitPoints.sol";
 import "./interface/ISummitReferrals.sol";
+import "./interface/IBlast.sol";
 import "./lib/Maintainable.sol";
 import "./lib/SummitViewUtils.sol";
 import "./lib/Recoverable.sol";
@@ -23,8 +24,22 @@ contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
   mapping(address => uint256) public REF_POINTS;
   mapping(address => address) public DELEGATE;
 
+  error AlreadyInitialized();
   error ZeroAddress();
   error NotPermitted();
+
+  bool public initialized = false;
+  address public governor;
+  function initialize(address _governor) public onlyMaintainer {
+    if (initialized) revert AlreadyInitialized();
+    initialized = true;
+
+    IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+
+    blast.configureClaimableGas();
+    blast.configureGovernor(_governor);
+    governor = _governor;
+  }
 
   function setPointsAdapter(address _pointsAdapter) override public onlyMaintainer {
     emit UpdatedPointsAdapter(_pointsAdapter);

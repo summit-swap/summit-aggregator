@@ -11,6 +11,7 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./interface/ISummitReferrals.sol";
 import "./interface/ISummitPoints.sol";
+import "./interface/IBlast.sol";
 import "./lib/Maintainable.sol";
 
 
@@ -44,11 +45,26 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     mapping(address => string) public REF_CODE_INV;
     uint256 GLOBAL_BOOST;
 
+    error AlreadyInitialized();
     error MissingReferral();
     error SelfReferral();
     error ReciprocalReferral();
     error LengthMismatch();
     error CodeNotAvailable();
+
+
+    bool public initialized = false;
+    address public governor;
+    function initialize(address _governor) public onlyMaintainer {
+      if (initialized) revert AlreadyInitialized();
+      initialized = true;
+
+      IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+
+      blast.configureClaimableGas();
+      blast.configureGovernor(_governor);
+      governor = _governor;
+    }
 
 
     function setPointsContract(address _pointsContract) override public onlyMaintainer {

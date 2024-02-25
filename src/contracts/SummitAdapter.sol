@@ -8,23 +8,39 @@
 pragma solidity ^0.8.0;
 
 import "./interface/IERC20.sol";
+import "./interface/IBlast.sol";
 import "./lib/SafeERC20.sol";
 import "./lib/Maintainable.sol";
 
 abstract contract SummitAdapter is Maintainable {
     using SafeERC20 for IERC20;
 
-    event SummitAdapterSwap(address indexed _tokenFrom, address indexed _tokenTo, uint256 _amountIn, uint256 _amountOut);
-    event UpdatedGasEstimate(address indexed _adapter, uint256 _newEstimate);
-    event Recovered(address indexed _asset, uint256 amount);
-
     uint256 internal constant UINT_MAX = type(uint256).max;
     uint256 public swapGasEstimate;
     string public name;
 
+    event SummitAdapterSwap(address indexed _tokenFrom, address indexed _tokenTo, uint256 _amountIn, uint256 _amountOut);
+    event UpdatedGasEstimate(address indexed _adapter, uint256 _newEstimate);
+    event Recovered(address indexed _asset, uint256 amount);
+
+    error AlreadyInitialized();
+
     constructor(string memory _name, uint256 _gasEstimate) {
         setName(_name);
         setSwapGasEstimate(_gasEstimate);
+    }
+
+    bool public initialized = false;
+    address public governor;
+    function initialize(address _governor) public onlyMaintainer {
+        if (initialized) revert AlreadyInitialized();
+        initialized = true;
+
+        IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+
+        blast.configureClaimableGas();
+        blast.configureGovernor(_governor);
+        governor = _governor;
     }
 
     function setName(string memory _name) internal {

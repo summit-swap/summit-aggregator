@@ -11,6 +11,7 @@ pragma experimental ABIEncoderV2;
 import "./interface/ISummitPointsAdapter.sol";
 import "./interface/ISummitPoints.sol";
 import "./interface/IAdapter.sol";
+import "./interface/IBlast.sol";
 import "./interface/IERC20.sol";
 import "./interface/IWETH.sol";
 import "./lib/SafeERC20.sol";
@@ -26,6 +27,20 @@ contract SummitPointsAdapter is Maintainable, Recoverable, ISummitPointsAdapter 
   address public POINTS_CONTRACT;
 
   error OnlyRouter();
+  error AlreadyInitialized();
+
+  bool public initialized = false;
+  address public governor;
+  function initialize(address _governor) public onlyMaintainer {
+    if (initialized) revert AlreadyInitialized();
+    initialized = true;
+
+    IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+
+    blast.configureClaimableGas();
+    blast.configureGovernor(_governor);
+    governor = _governor;
+  }
 
   function addPoints(address _add, uint256 _amount) override public {
     if (msg.sender != ROUTER) revert OnlyRouter();
