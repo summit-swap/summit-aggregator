@@ -8,22 +8,14 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
-import "./interface/ISummitRouter.sol";
 import "./interface/ISummitPoints.sol";
 import "./interface/ISummitReferrals.sol";
-import "./interface/IAdapter.sol";
-import "./interface/IERC20.sol";
-import "./interface/IWETH.sol";
-import "./lib/SafeERC20.sol";
 import "./lib/Maintainable.sol";
 import "./lib/SummitViewUtils.sol";
 import "./lib/Recoverable.sol";
-import "./lib/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+
 
 contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
-  using SafeERC20 for IERC20;
-  using EnumerableSet for EnumerableSet.AddressSet;
 
   address public POINTS_ADAPTER;
   address public REFERRALS;
@@ -47,7 +39,7 @@ contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
   function getPoints(address _add) override public view returns (uint256 selfPoints, uint256 refPoints) {
     return (
       SELF_POINTS[_add],
-      REF_POINTS[_add],
+      REF_POINTS[_add]
     );
   }
 
@@ -57,14 +49,14 @@ contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
         SELF_POINTS[_add],
         REF_POINTS[_add],
         0,
-        0,
+        0
       );
     }
     return (
       SELF_POINTS[_add],
       REF_POINTS[_add],
       ISummitReferrals(REFERRALS).getRefsCount(_add),
-      ISummitReferrals(REFERRALS).getReferrerLevel(_add, SELF_POINTS[_add], REF_POINTS[_add])
+      ISummitReferrals(REFERRALS).getReferrerLevel(_add)
     );
   }
 
@@ -79,7 +71,7 @@ contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
 
     SELF_POINTS[_add] += ISummitReferrals(REFERRALS).getAmountWithReferredBonus(_add, _amount);
 
-    (address referrer, uint256 refPoints) = ISummitReferrals(REFERRALS).getReferrerAndPoints(_add);
+    (address referrer, uint256 refPoints) = ISummitReferrals(REFERRALS).getReferrerAndPoints(_add, _amount);
     if (refPoints > 0) {
       REF_POINTS[referrer] += refPoints;
     }

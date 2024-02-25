@@ -127,6 +127,10 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
       return uint8(LEVEL_REFS_REQ.length);
     }
 
+    function getRefsCount(address _add) override public view returns (uint256) {
+      return REF_COUNT[_add];
+    }
+
     function getReferrerMultiplier(address _add) override public view returns (uint256) {
       return LEVEL_MULT_REWARD[getReferrerLevel(_add)];
     }

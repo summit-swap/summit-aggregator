@@ -22,6 +22,7 @@ interface ISummitReferrals {
   function setGlobalBoost(uint256 _boost) external;
   function setLevelData(uint256[] memory _refPointsReq, uint256[] memory _selfPointsReq, uint256[] memory _refsReq, uint256[] memory _multRew, uint256 _hasReferrerBonusMult) external;
   function getReferrer(address _add) external view returns (address);
+  function getRefsCount(address _add) external view returns (uint256);
   function getReferrerLevel(address _add) external view returns (uint8);
   function getReferrerMultiplier(address _add) external view returns (uint256);
   function getAmountWithReferredBonus(address _add, uint256 _amount) external view returns (uint256);
