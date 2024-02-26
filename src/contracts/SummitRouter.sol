@@ -57,14 +57,17 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
     bool public initialized = false;
     address public governor;
     function initialize(address _governor) public onlyMaintainer {
-      if (initialized) revert AlreadyInitialized();
-      initialized = true;
+        if (initialized) revert AlreadyInitialized();
+        initialized = true;
 
-      IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+        // __BLAST__
+        // IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+        // __BLAST__
+        // blast.configureClaimableGas();
+        // __BLAST__
+        // blast.configureGovernor(_governor);
 
-      blast.configureClaimableGas();
-      blast.configureGovernor(_governor);
-      governor = _governor;
+        governor = _governor;
     }
 
     // -- SETTERS --

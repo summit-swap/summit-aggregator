@@ -106,6 +106,34 @@ module.exports.deployOracle = (networkName) => {
   return exportEnv;
 };
 
+module.exports.deployBlastGasRefund = _deployBlastGasRefund;
+
+function _deployBlastGasRefund(networkName) {
+  tags = ["blast_gas_refund", "blast_gas_refund_".concat(networkName)];
+  return deployContract(networkName, tags, "GasRefund", "GasRefund", []);
+}
+
+module.exports.deploySummitPoints = _deploySummitPoints;
+
+function _deploySummitPoints(networkName) {
+  tags = ["summit_points", "summit_points_".concat(networkName)];
+  return deployContract(networkName, tags, "SummitPoints", "SummitPoints", []);
+}
+
+module.exports.deploySummitReferrals = _deploySummitReferrals;
+
+function _deploySummitReferrals(networkName) {
+  tags = ["summit_referrals", "summit_referrals_".concat(networkName)];
+  return deployContract(networkName, tags, "SummitReferrals", "SummitReferrals", []);
+}
+
+module.exports.deploySummitVolumeAdapterV1 = _deploySummitVolumeAdapterV1;
+
+function _deploySummitVolumeAdapterV1(networkName) {
+  tags = ["summit_volume_adapter_v1", "summit_volume_adapter_v1_".concat(networkName)];
+  return deployContract(networkName, tags, "SummitVolumeAdapterV1", "SummitVolumeAdapterV1", []);
+}
+
 module.exports.deployAdapter = _deployAdapter;
 
 function _deployAdapter(networkName, tags, name, contractName, args) {

@@ -36,10 +36,13 @@ abstract contract SummitAdapter is Maintainable {
         if (initialized) revert AlreadyInitialized();
         initialized = true;
 
-        IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+        // __BLAST__
+        // IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+        // __BLAST__
+        // blast.configureClaimableGas();
+        // __BLAST__
+        // blast.configureGovernor(_governor);
 
-        blast.configureClaimableGas();
-        blast.configureGovernor(_governor);
         governor = _governor;
     }
 

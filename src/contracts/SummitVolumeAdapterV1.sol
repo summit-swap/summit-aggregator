@@ -21,7 +21,7 @@ import "./lib/Recoverable.sol";
 import "./lib/SafeERC20.sol";
 
 
-contract SummitVolumeAdapter is Maintainable, Recoverable, ISummitVolumeAdapter {
+contract SummitVolumeAdapterV1 is Maintainable, Recoverable, ISummitVolumeAdapter {
 
   address public ROUTER;
   address public POINTS_CONTRACT;
@@ -35,10 +35,13 @@ contract SummitVolumeAdapter is Maintainable, Recoverable, ISummitVolumeAdapter 
     if (initialized) revert AlreadyInitialized();
     initialized = true;
 
-    IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+    // __BLAST__
+    // IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+    // __BLAST__
+    // blast.configureClaimableGas();
+    // __BLAST__
+    // blast.configureGovernor(_governor);
 
-    blast.configureClaimableGas();
-    blast.configureGovernor(_governor);
     governor = _governor;
   }
 
