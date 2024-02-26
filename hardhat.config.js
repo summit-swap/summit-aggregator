@@ -1,18 +1,18 @@
 require("dotenv").config();
-require("@nomiclabs/hardhat-etherscan");
+// require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
-require("hardhat-contract-sizer");
-require("hardhat-deploy-ethers");
+// require("hardhat-contract-sizer");
+// require("hardhat-deploy-ethers");
 require("hardhat-abi-exporter");
 require("hardhat-gas-reporter");
 require("hardhat-log-remover");
-require("hardhat-tracer");
-require("hardhat-deploy");
+// require("hardhat-tracer");
+// require("hardhat-deploy");
+require("@nomicfoundation/hardhat-ignition-ethers");
 
 // Tasks
 require("./src/tasks/update-hop-tokens");
 require("./src/tasks/update-adapters");
-require("./src/tasks/verify-contract");
 require("./src/tasks/find-best-path");
 require("./src/tasks/find-best-path-wrapped");
 require("./src/tasks/list-adapters");

@@ -43,15 +43,13 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         address[] memory _adapters,
         address[] memory _trustedTokens,
         address _feeClaimer,
-        address _wrapped_native,
-        address _volumeAdapter
+        address _wrapped_native
     ) {
         setAllowanceForWrapping(_wrapped_native);
         setTrustedTokens(_trustedTokens);
         setFeeClaimer(_feeClaimer);
         setAdapters(_adapters);
         WNATIVE = _wrapped_native;
-        VOLUME_ADAPTER = _volumeAdapter;
     }
 
     bool public initialized = false;

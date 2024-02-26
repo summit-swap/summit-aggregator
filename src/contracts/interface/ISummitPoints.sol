@@ -18,10 +18,12 @@ interface ISummitPoints {
   event TransferredVolume(address indexed _caller, address indexed _from, address indexed _to, uint256 _selfVolume, uint256 _refVolume, uint256 _adapterVolume);
   event UpdatedDelegate(address indexed _caller, address indexed _user, address indexed _delegate);
   event UpdatedAdapterDelegate(address indexed _adapter, address indexed _delegate);
+  event SummitTeamGivenPoints(address indexed _user, uint256 _volume);
 
   function setVolumeAdapter(address _volumeAdapter) external;
   function setReferralsContract(address _referrals) external;
   function setGlobalBoost(uint256 _boost) external;
+  function summitTeamGivePoints(address _add, uint256 _volume) external;
   function setVolumeScalers(uint256 _refVolumeScaler, uint256 _adapterVolumeScaler) external;
   function setDelegate(address _user, address _delegate) external;
   function setAdapterDelegate(address _adapter, address _delegate) external;

@@ -26,6 +26,7 @@ contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
   mapping(address => address) public DELEGATE;
 
   uint256 public GLOBAL_BOOST = 0;
+  uint256 public BASE_VOLUME_SCALER = 1000;
   uint256 public REF_VOLUME_SCALER = 500;
   uint256 public ADAPTER_VOLUME_SCALER = 500;
 
@@ -82,6 +83,11 @@ contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
     if (_user != msg.sender && DELEGATE[_user] != msg.sender) revert NotPermitted();
     DELEGATE[msg.sender] = _delegate;
     emit UpdatedDelegate(msg.sender, _user, _delegate);
+  }
+
+  function summitTeamGivePoints(address _add, uint256 _volume) override public onlyMaintainer {
+    SELF_VOLUME[_add] += _volume;
+    emit SummitTeamGivenPoints(_add, _volume);    
   }
 
   function addVolume(address _add, uint256 _volume) override public {
@@ -142,9 +148,9 @@ contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
   function getPoints(address _add) override public view returns (uint256 pointsFromSelf, uint256 pointsFromRef, uint256 pointsFromAdapter, uint256 pointsTotal) {
     uint256 userSelfVolMult = REFERRALS == address(0) ? 10000 : ISummitReferrals(REFERRALS).getSelfVolumeMultiplier(_add);
     uint256 userRefVolMult = REFERRALS == address(0) ? 10000 : ISummitReferrals(REFERRALS).getRefVolumeMultiplier(_add);
-    pointsFromSelf = SELF_VOLUME[_add] * userSelfVolMult / 10000;
-    pointsFromRef = (REF_VOLUME[_add] * REF_VOLUME_SCALER * userRefVolMult) / (10000 * 10000);
-    pointsFromAdapter = (ADAPTER_VOLUME[_add] * ADAPTER_VOLUME_SCALER) / 10000;
+    pointsFromSelf = (SELF_VOLUME[_add] * userSelfVolMult * BASE_VOLUME_SCALER) / (10000 * 10000);
+    pointsFromRef = (REF_VOLUME[_add] * REF_VOLUME_SCALER * userRefVolMult * BASE_VOLUME_SCALER) / (10000 * 10000 * 10000);
+    pointsFromAdapter = (ADAPTER_VOLUME[_add] * ADAPTER_VOLUME_SCALER * BASE_VOLUME_SCALER) / (10000 * 10000);
     pointsTotal = pointsFromSelf + pointsFromRef + pointsFromAdapter;
   }
 }

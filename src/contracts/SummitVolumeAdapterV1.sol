@@ -45,6 +45,17 @@ contract SummitVolumeAdapterV1 is Maintainable, Recoverable, ISummitVolumeAdapte
     governor = _governor;
   }
 
+
+  function setRouter(address _router) override public onlyMaintainer {
+    emit UpdatedRouter(_router);
+    ROUTER = _router;
+  }
+
+  function setPointsContract(address _pointsContract) override public onlyMaintainer {
+    emit UpdatedPointsContract(_pointsContract);
+    POINTS_CONTRACT = _pointsContract;
+  }
+
   function addVolume(address _add, uint256 _volume) override public {
     if (msg.sender != ROUTER) revert OnlyRouter();
     if (POINTS_CONTRACT == address(0)) return;
@@ -55,15 +66,5 @@ contract SummitVolumeAdapterV1 is Maintainable, Recoverable, ISummitVolumeAdapte
     if (msg.sender != ROUTER) revert OnlyRouter();
     if (POINTS_CONTRACT == address(0)) return;
     ISummitPoints(POINTS_CONTRACT).addAdapterVolume(_add, _volume);
-  }
-
-  function setRouter(address _router) override public onlyMaintainer {
-    emit UpdatedRouter(_router);
-    ROUTER = _router;
-  }
-
-  function setPointsContract(address _pointsContract) override public onlyMaintainer {
-    emit UpdatedPointsContract(_pointsContract);
-    POINTS_CONTRACT = _pointsContract;
   }
 }
