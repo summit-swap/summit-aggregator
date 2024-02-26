@@ -17,7 +17,6 @@ import "./lib/Maintainable.sol";
 import "./lib/SummitViewUtils.sol";
 import "./lib/Recoverable.sol";
 import "./lib/SafeERC20.sol";
-import "hardhat/console.sol";
 
 
 contract SummitOracle is Maintainable, Recoverable {

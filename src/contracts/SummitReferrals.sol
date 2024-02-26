@@ -13,7 +13,6 @@ import "./interface/ISummitReferrals.sol";
 import "./interface/ISummitPoints.sol";
 import "./interface/IBlast.sol";
 import "./lib/Maintainable.sol";
-import "hardhat/console.sol";
 
 // | Level    | Custom Benefit  | Reward  | Self Volume Required  | Referred Volume Required  | Referral Num Required   |
 // | ---      | ---             | ---     | ---                   | ---                       | ---                     |
