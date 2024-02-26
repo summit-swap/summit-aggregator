@@ -52,6 +52,7 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     error LengthMismatch();
     error CodeNotAvailable();
     error MustBeAtLeastBronze();
+    error InvalidLevel();
 
     constructor() {
       uint256[6] memory refVolumeReq = [uint256(0), 0, 10000e18, 25000e18, 100000e18, 1000000e18];
@@ -174,6 +175,7 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     }
 
     function getLevelRequirements(uint8 _level) override public view returns (uint256 selfVolume, uint256 refVolume, uint256 refsCount) {
+      if (_level >= levelCount) revert InvalidLevel();
       return (
         LEVEL_SELF_VOLUME_REQ[_level],
         LEVEL_REF_VOLUME_REQ[_level],
@@ -186,10 +188,10 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     }
 
     function getRefVolumeMultiplier(address _add) override public view returns (uint256) {
-      return LEVEL_MULT_REWARD[getReferrerLevel(_add)];
+      return 10000 + (LEVEL_MULT_REWARD[getReferrerLevel(_add)]);
     }
 
     function getSelfVolumeMultiplier(address _add) override public view returns (uint256) {
-      return REFERRER[_add] != address(0) ? BONUS_FOR_BEING_REFERRED : 0;
+      return 10000 + (REFERRER[_add] != address(0) ? BONUS_FOR_BEING_REFERRED : 0);
     }
 }

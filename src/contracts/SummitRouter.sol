@@ -17,7 +17,7 @@ import "./lib/SafeERC20.sol";
 import "./lib/Maintainable.sol";
 import "./lib/SummitViewUtils.sol";
 import "./lib/Recoverable.sol";
-import "./interface/ISummitPointsAdapter.sol";
+import "./interface/ISummitVolumeAdapter.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 
@@ -33,10 +33,9 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
     uint256 public MIN_FEE = 0;
     address public FEE_CLAIMER;
     address[] public TRUSTED_TOKENS;
-    mapping(address => uint256) public TOKEN_POINT_MULTIPLIERS; // (token amount * tokenPointMultiplier[token]) / 1e12
+    mapping(address => uint256) public TOKEN_VOLUME_MULTIPLIERS; // (token amount * tokenVolumeMultiplier[token]) / 1e12
     address[] public ADAPTERS;
-    address public POINTS_ADAPTER;
-    uint256 public ADAPTER_POINTS_MULTIPLIER = 500;
+    address public VOLUME_ADAPTER;
 
     error AlreadyInitialized();
 
@@ -45,14 +44,14 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         address[] memory _trustedTokens,
         address _feeClaimer,
         address _wrapped_native,
-        address _pointsAdapter
+        address _volumeAdapter
     ) {
         setAllowanceForWrapping(_wrapped_native);
         setTrustedTokens(_trustedTokens);
         setFeeClaimer(_feeClaimer);
         setAdapters(_adapters);
         WNATIVE = _wrapped_native;
-        POINTS_ADAPTER = _pointsAdapter;
+        VOLUME_ADAPTER = _volumeAdapter;
     }
 
     bool public initialized = false;
@@ -79,11 +78,11 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         TRUSTED_TOKENS = _trustedTokens;
     }
 
-    function setTokenPointMultipliers(address[] memory _tokens, uint256[] memory _pointMultipliers) public onlyMaintainer {
-        require(_tokens.length == _pointMultipliers.length, "SummitRouter: Array length mismatch");
-        emit UpdatedTokenPointMultipliers(_tokens, _pointMultipliers);
+    function setTokenVolumeMultipliers(address[] memory _tokens, uint256[] memory _volumeMultipliers) public onlyMaintainer {
+        require(_tokens.length == _volumeMultipliers.length, "SummitRouter: Array length mismatch");
+        emit UpdatedTokenVolumeMultipliers(_tokens, _volumeMultipliers);
         for (uint256 i = 0; i < _tokens.length; i++) {
-            TOKEN_POINT_MULTIPLIERS[_tokens[i]] = _pointMultipliers[i];
+            TOKEN_VOLUME_MULTIPLIERS[_tokens[i]] = _volumeMultipliers[i];
         }
     }
 
@@ -92,14 +91,9 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         ADAPTERS = _adapters;
     }
 
-    function setPointsAdapter(address _pointsAdapter) override public onlyMaintainer {
-        emit UpdatedPointsAdapter(_pointsAdapter);
-        POINTS_ADAPTER = _pointsAdapter;
-    }
-
-    function setAdapterPointsMultiplier(uint256 _adapterPointsMultiplier) override public onlyMaintainer {
-        emit UpdatedAdapterPointsMultiplier(_adapterPointsMultiplier);
-        ADAPTER_POINTS_MULTIPLIER = _adapterPointsMultiplier;
+    function setVolumeAdapter(address _volumeAdapter) override public onlyMaintainer {
+        emit UpdatedVolumeAdapter(_volumeAdapter);
+        VOLUME_ADAPTER = _volumeAdapter;
     }
 
     function setMinFee(uint256 _fee) override external onlyMaintainer {
@@ -344,35 +338,34 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         return bestOption;
     }
 
-    // -- POINTS --
-    function _applyUserPoints(
+    // -- VOLUME --
+    function _applyUserVolume(
         address _from,
         address[] memory _path, 
         uint256[] memory _amounts
     ) internal returns (uint256) {
-        if (POINTS_ADAPTER == address(0)) return 0;
+        if (VOLUME_ADAPTER == address(0)) return 0;
 
-        uint256 points = 0;
+        uint256 volume = 0;
         for (uint256 i = 0; i < _path.length; i++) {
-            if (points == 0 && TOKEN_POINT_MULTIPLIERS[_path[i]] != 0) {
-                points = TOKEN_POINT_MULTIPLIERS[_path[i]] * _amounts[i] / 1e12;
+            if (volume == 0 && TOKEN_VOLUME_MULTIPLIERS[_path[i]] != 0) {
+                volume = TOKEN_VOLUME_MULTIPLIERS[_path[i]] * _amounts[i] / 1e12;
             }
         }
 
-        // TODO: Add points to user
-        if (points > 0 && POINTS_ADAPTER != address(0)) {
-            ISummitPointsAdapter(POINTS_ADAPTER).addPoints(_from, points);
+        if (volume > 0 && VOLUME_ADAPTER != address(0)) {
+            ISummitVolumeAdapter(VOLUME_ADAPTER).addVolume(_from, volume);
         }
 
-        return points;
+        return volume;
     }
 
-    function _applyAdapterPoints(
+    function _applyAdapterVolume(
         address _adapter,
-        uint256 _points
+        uint256 _volume
     ) internal {
-        if (_points == 0 || POINTS_ADAPTER == address(0) || ADAPTER_POINTS_MULTIPLIER == 0) return;
-        ISummitPointsAdapter(POINTS_ADAPTER).addPoints(_adapter, _points * ADAPTER_POINTS_MULTIPLIER / 10000);
+        if (_volume == 0 || VOLUME_ADAPTER == address(0)) return;
+        ISummitVolumeAdapter(VOLUME_ADAPTER).addAdapterVolume(_adapter, _volume);
     }
 
     // -- SWAPPERS --
@@ -397,12 +390,12 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
             amounts[i + 1] = IAdapter(_trade.adapters[i]).query(amounts[i], _trade.path[i], _trade.path[i + 1]);
         }
 
-        // Add points to user
-        uint256 points = _applyUserPoints(_from, _trade.path, amounts);
+        // Add volume to user
+        uint256 volume = _applyUserVolume(_from, _trade.path, amounts);
 
         require(amounts[amounts.length - 1] >= _trade.amountOut, "SummitRouter: Insufficient output amount");
         for (uint256 i = 0; i < _trade.adapters.length; i++) {
-            _applyAdapterPoints(_trade.adapters[i], points);
+            _applyAdapterVolume(_trade.adapters[i], volume);
 
             // All adapters should transfer output token to the following target
             // All targets are the adapters, expect for the last swap where tokens are sent out

@@ -15,8 +15,8 @@ interface ISummitPoints {
   event AddedUserVolume(address indexed _user, uint256 _volume);
   event AddedReferrerVolume(address indexed _referrer, address indexed _user, uint256 _volume);
   event AddedAdapterVolume(address indexed _adapter, uint256 _volume);
-  event TransferredVolume(address indexed _executor, address indexed _from, address indexed _to, uint256 _selfVolume, uint256 _refVolume, uint256 _adapterVolume);
-  event UpdatedDelegate(address indexed _executor, address indexed _user, address indexed _delegate);
+  event TransferredVolume(address indexed _caller, address indexed _from, address indexed _to, uint256 _selfVolume, uint256 _refVolume, uint256 _adapterVolume);
+  event UpdatedDelegate(address indexed _caller, address indexed _user, address indexed _delegate);
   event UpdatedAdapterDelegate(address indexed _adapter, address indexed _delegate);
 
   function setVolumeAdapter(address _volumeAdapter) external;

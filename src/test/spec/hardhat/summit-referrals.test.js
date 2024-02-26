@@ -3,6 +3,10 @@ const { setTestEnv, addresses, helpers } = require("../../utils/test-env");
 const { waffle } = require("hardhat");
 const { loadFixture } = waffle;
 
+const e18 = (n) => {
+  return ethers.utils.parseUnits(`${n}`);
+};
+
 describe("SummitReferrals", function () {
   let testEnv;
   // let referrals;
@@ -88,15 +92,6 @@ describe("SummitReferrals", function () {
     await referrals.boostReferrer(deployer.address, 10);
     const overboostLevel = await referrals.getReferrerLevel(deployer.address);
     expect(overboostLevel).to.eq(5);
-  });
-
-  it("Global Boost", async () => {
-    const { referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
-
-    await expect(referrals.setGlobalBoost(100)).to.emit(referrals, "UpdatedGlobalBoost").withArgs(100);
-
-    const boost = await referrals.GLOBAL_BOOST();
-    expect(boost).to.eq(100);
   });
 
   it("Set Referrer Reversions", async () => {
@@ -265,13 +260,94 @@ describe("SummitReferrals", function () {
     const bonusForBeingReferred = await referrals.BONUS_FOR_BEING_REFERRED();
     expect(bonusForBeingReferred).to.eq(1);
 
-    const level4RefPointsReq = await referrals.LEVEL_REF_POINTS_REQ(levelCount - 1);
-    const level4SelfPointsReq = await referrals.LEVEL_SELF_POINTS_REQ(levelCount - 1);
+    const level4RefVolumeReq = await referrals.LEVEL_REF_VOLUME_REQ(levelCount - 1);
+    const level4SelfVolumeReq = await referrals.LEVEL_SELF_VOLUME_REQ(levelCount - 1);
     const level4RefsReq = await referrals.LEVEL_REFS_REQ(levelCount - 1);
     const level4MultRew = await referrals.LEVEL_MULT_REWARD(levelCount - 1);
-    expect(level4RefPointsReq).to.eq(3);
-    expect(level4SelfPointsReq).to.eq(3);
+    expect(level4RefVolumeReq).to.eq(3);
+    expect(level4SelfVolumeReq).to.eq(3);
     expect(level4RefsReq).to.eq(3);
     expect(level4MultRew).to.eq(3);
+  });
+
+  it("Level Requirements", async () => {
+    const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
+
+    // . REVERT: Invalid Level
+    await expect(referrals.getLevelRequirements(10)).to.be.revertedWith("InvalidLevel");
+
+    const level4SelfVolReq = await referrals.LEVEL_SELF_VOLUME_REQ(4);
+    const level4RefVolReq = await referrals.LEVEL_REF_VOLUME_REQ(4);
+    const level4RefsReq = await referrals.LEVEL_REFS_REQ(4);
+
+    const level4Reqs = await referrals.getLevelRequirements(4);
+    expect(level4Reqs[0]).to.eq(level4SelfVolReq);
+    expect(level4Reqs[1]).to.eq(level4RefVolReq);
+    expect(level4Reqs[2]).to.eq(level4RefsReq);
+  });
+
+  it("Get Ref Volume Multiplier", async () => {
+    const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
+
+    await referrals.boostReferrer(user1.address, 0);
+    const volMult0 = parseInt(await referrals.getRefVolumeMultiplier(user1.address));
+    expect(volMult0).to.eq(10000);
+
+    await referrals.boostReferrer(user1.address, 4);
+    const expectedVolMult4 = parseInt(await referrals.LEVEL_MULT_REWARD(4));
+    const volMult4 = parseInt(await referrals.getRefVolumeMultiplier(user1.address));
+    expect(volMult4).to.eq(10000 + expectedVolMult4);
+  });
+
+  it("Get Self Volume Multiplier", async () => {
+    const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
+
+    await referrals.boostReferrer(user2.address, 4);
+
+    const volMultNoRef = parseInt(await referrals.getSelfVolumeMultiplier(user1.address));
+    expect(volMultNoRef).to.eq(10000);
+
+    await referrals.connect(user1).setReferrer(user2.address, "");
+
+    const bonusForBeingReferred = parseInt(await referrals.BONUS_FOR_BEING_REFERRED());
+    const volMultWithRef = parseInt(await referrals.getSelfVolumeMultiplier(user1.address));
+    expect(volMultWithRef).to.eq(10000 + bonusForBeingReferred);
+  });
+
+  it("Referrer Level", async () => {
+    const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
+    await points.setVolumeAdapter(deployer.address);
+    await points.setReferralsContract(referrals.address);
+    await referrals.setPointsContract(points.address);
+
+    // . SUCCEED: Wood --> Bronze
+    await expect(referrals.connect(user2).setReferrer(user1.address, "")).to.be.revertedWith("MustBeAtLeastBronze");
+
+    await points.addVolume(user1.address, e18(100));
+
+    const user1Level1 = parseInt(await referrals.getReferrerLevel(user1.address));
+    expect(user1Level1).to.eq(1);
+
+    await expect(referrals.connect(user2).setReferrer(user1.address, "")).to.not.be.reverted;
+
+    // . SUCCEED: Bronze --> Silver (ALL 3 REQUIREMENTS MUST BE MET)
+
+    // ... Test Self Vol Req
+    await points.addVolume(user1.address, e18(900));
+    const user1Level2TestA = parseInt(await referrals.getReferrerLevel(user1.address));
+    expect(user1Level2TestA).to.eq(1);
+    // ... Test Req Vol Req
+    await points.addVolume(user2.address, e18(10000));
+    const user1Level2TestB = parseInt(await referrals.getReferrerLevel(user1.address));
+    expect(user1Level2TestB).to.eq(1);
+    // ... Test Refs Req
+    await referrals.connect(user3).setReferrer(user1.address, "");
+    await referrals.connect(user4).setReferrer(user1.address, "");
+
+    const user1Level2Test2 = parseInt(await referrals.getReferrerLevel(user1.address));
+    expect(user1Level2Test2).to.eq(2);
+
+    const user1Level2 = parseInt(await referrals.getReferrerLevel(user1.address));
+    expect(user1Level2).to.eq(2);
   });
 });

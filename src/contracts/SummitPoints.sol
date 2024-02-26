@@ -94,7 +94,7 @@ contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
     SELF_VOLUME[_add] += _volume;
     emit AddedUserVolume(_add, _volume);
 
-    address referrer = ISummitReferrals(REFERRALS).getReferrer(_add);
+    address referrer = REFERRALS == address(0) ? address(0) : ISummitReferrals(REFERRALS).getReferrer(_add);
     if (referrer != address(0)) {
       REF_VOLUME[referrer] += _volume;
       emit AddedReferrerVolume(referrer, _add, _volume);
@@ -140,8 +140,10 @@ contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
   }
 
   function getPoints(address _add) override public view returns (uint256 pointsFromSelf, uint256 pointsFromRef, uint256 pointsFromAdapter, uint256 pointsTotal) {
-    pointsFromSelf = SELF_VOLUME[_add] * (10000 + (REFERRALS == address(0) ? 10000 : ISummitReferrals(REFERRALS).getSelfVolumeMultiplier(_add))) / 10000;
-    pointsFromRef = (REF_VOLUME[_add] * REF_VOLUME_SCALER * (10000 + (REFERRALS == address(0) ? 10000 : ISummitReferrals(REFERRALS).getRefVolumeMultiplier(_add)))) / (10000 * 10000);
+    uint256 userSelfVolMult = REFERRALS == address(0) ? 10000 : ISummitReferrals(REFERRALS).getSelfVolumeMultiplier(_add);
+    uint256 userRefVolMult = REFERRALS == address(0) ? 10000 : ISummitReferrals(REFERRALS).getRefVolumeMultiplier(_add);
+    pointsFromSelf = SELF_VOLUME[_add] * userSelfVolMult / 10000;
+    pointsFromRef = (REF_VOLUME[_add] * REF_VOLUME_SCALER * userRefVolMult) / (10000 * 10000);
     pointsFromAdapter = (ADAPTER_VOLUME[_add] * ADAPTER_VOLUME_SCALER) / 10000;
     pointsTotal = pointsFromSelf + pointsFromRef + pointsFromAdapter;
   }

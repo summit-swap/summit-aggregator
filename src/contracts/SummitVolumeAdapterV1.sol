@@ -8,7 +8,7 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
-import "./interface/ISummitPointsAdapter.sol";
+import "./interface/ISummitVolumeAdapter.sol";
 import "./interface/ISummitPoints.sol";
 import "./interface/IAdapter.sol";
 import "./interface/IBlast.sol";
@@ -21,7 +21,7 @@ import "./lib/Recoverable.sol";
 import "./lib/SafeERC20.sol";
 
 
-contract SummitPointsAdapter is Maintainable, Recoverable, ISummitPointsAdapter {
+contract SummitVolumeAdapter is Maintainable, Recoverable, ISummitVolumeAdapter {
 
   address public ROUTER;
   address public POINTS_CONTRACT;
@@ -42,10 +42,16 @@ contract SummitPointsAdapter is Maintainable, Recoverable, ISummitPointsAdapter 
     governor = _governor;
   }
 
-  function addPoints(address _add, uint256 _amount) override public {
+  function addVolume(address _add, uint256 _volume) override public {
     if (msg.sender != ROUTER) revert OnlyRouter();
     if (POINTS_CONTRACT == address(0)) return;
-    ISummitPoints(POINTS_CONTRACT).addPoints(_add, _amount);
+    ISummitPoints(POINTS_CONTRACT).addVolume(_add, _volume);
+  }
+
+  function addAdapterVolume(address _add, uint256 _volume) override public {
+    if (msg.sender != ROUTER) revert OnlyRouter();
+    if (POINTS_CONTRACT == address(0)) return;
+    ISummitPoints(POINTS_CONTRACT).addAdapterVolume(_add, _volume);
   }
 
   function setRouter(address _router) override public onlyMaintainer {

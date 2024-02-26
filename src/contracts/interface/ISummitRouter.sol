@@ -36,10 +36,9 @@ struct Trade {
 interface ISummitRouter {
 
     event UpdatedTrustedTokens(address[] _newTrustedTokens);
-    event UpdatedTokenPointMultipliers(address[] _tokens, uint256[] _pointMultipliers);
+    event UpdatedTokenVolumeMultipliers(address[] _tokens, uint256[] _pointMultipliers);
     event UpdatedAdapters(address[] _newAdapters);
-    event UpdatedPointsAdapter(address _pointsAdapter);
-    event UpdatedAdapterPointsMultiplier(uint256 _adapterPointsMultiplier);
+    event UpdatedVolumeAdapter(address _volumeAdapter);
     event UpdatedMinFee(uint256 _oldMinFee, uint256 _newMinFee);
     event UpdatedFeeClaimer(address _oldFeeClaimer, address _newFeeClaimer);
     event SummitSwap(address indexed _tokenIn, address indexed _tokenOut, uint256 _amountIn, uint256 _amountOut);
@@ -47,8 +46,7 @@ interface ISummitRouter {
     // admin
     function setTrustedTokens(address[] memory _trustedTokens) external;
     function setAdapters(address[] memory _adapters) external;
-    function setPointsAdapter(address _pointsAdapter) external;
-    function setAdapterPointsMultiplier(uint256 _adapterPointsMultiplier) external;
+    function setVolumeAdapter(address _volumeAdapter) external;
     function setFeeClaimer(address _claimer) external;
     function setMinFee(uint256 _fee) external;
 
