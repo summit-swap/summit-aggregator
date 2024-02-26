@@ -104,16 +104,18 @@ module.exports = buildModule("SummitSwapEcosystem", (m) => {
   );
 
   const summitPoints = m.contract("SummitPoints", [], { after: [summitRouter] });
-  m.call(summitPoints, "initialize", [deployer]);
+  const initSummitPointsCall = m.call(summitPoints, "initialize", [deployer], { after: [summitPoints] });
 
-  const summitReferrals = m.contract("SummitReferrals", [], { after: [summitPoints] });
-  m.call(summitReferrals, "initialize", [deployer]);
+  const summitReferrals = m.contract("SummitReferrals", [], { after: [initSummitPointsCall] });
+  const initSummitReferralsCall = m.call(summitReferrals, "initialize", [deployer], { after: [summitReferrals] });
 
-  const summitVolumeAdapter = m.contract("SummitVolumeAdapterV1", [], { after: [summitReferrals] });
-  m.call(summitVolumeAdapter, "initialize", [deployer]);
+  const summitVolumeAdapter = m.contract("SummitVolumeAdapterV1", [], { after: [initSummitReferralsCall] });
+  const initSummitVolumeAdapterCall = m.call(summitVolumeAdapter, "initialize", [deployer], {
+    after: [summitVolumeAdapter],
+  });
 
   const summitOracle = m.contract("SummitOracle", [summitRouter, deployOptions.oracle.stable, deployOptions.wnative], {
-    after: [summitVolumeAdapter],
+    after: [initSummitVolumeAdapterCall],
   });
 
   // const { summitRouter } = m.useModule(SummitRouterModule);
@@ -123,18 +125,28 @@ module.exports = buildModule("SummitSwapEcosystem", (m) => {
   // const { summitOracle } = m.useModule(SummitOracleModule);
 
   // Points Contract
-  m.call(summitPoints, "setVolumeAdapter", [summitVolumeAdapter]);
-  m.call(summitPoints, "setReferralsContract", [summitReferrals]);
+  const setVolAdapterCall = m.call(summitPoints, "setVolumeAdapter", [summitVolumeAdapter], { after: [summitOracle] });
+  const setReferralsContractCall = m.call(summitPoints, "setReferralsContract", [summitReferrals], {
+    after: [setVolAdapterCall],
+  });
 
   // Referrals Contract
-  m.call(summitReferrals, "setPointsContract", [summitPoints]);
+  const setReferralsPointsContractCall = m.call(summitReferrals, "setPointsContract", [summitPoints], {
+    after: [setReferralsContractCall],
+  });
 
   // Volume Adapter Contract
-  m.call(summitVolumeAdapter, "setRouter", [summitRouter]);
-  m.call(summitVolumeAdapter, "setPointsContract", [summitPoints]);
+  const setRouterCall = m.call(summitVolumeAdapter, "setRouter", [summitRouter], {
+    after: [setReferralsPointsContractCall],
+  });
+  const setVolAdapterPointsContractCall = m.call(summitVolumeAdapter, "setPointsContract", [summitPoints], {
+    after: [setRouterCall],
+  });
 
   // Router Contract
-  m.call(summitRouter, "setVolumeAdapter", [summitVolumeAdapter]);
+  const setRouterVolAdapterCall = m.call(summitRouter, "setVolumeAdapter", [summitVolumeAdapter], {
+    after: [setVolAdapterPointsContractCall],
+  });
 
   return { summitPoints, summitReferrals, summitVolumeAdapter };
 });

@@ -24,6 +24,7 @@ contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
   mapping(address => uint256) public REF_VOLUME;
   mapping(address => uint256) public ADAPTER_VOLUME;
   mapping(address => address) public DELEGATE;
+  mapping(address => bool) public BLACKLISTED;
 
   uint256 public GLOBAL_BOOST = 0;
   uint256 public BASE_VOLUME_SCALER = 1000; // 10%
@@ -161,6 +162,7 @@ contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
   }
 
   function getPoints(address _add) override public view returns (uint256 pointsFromSelf, uint256 pointsFromRef, uint256 pointsFromAdapter, uint256 pointsTotal) {
+    if (BLACKLISTED[_add]) return (0, 0, 0, 0);
     uint256 userSelfVolMult = REFERRALS == address(0) ? 10000 : ISummitReferrals(REFERRALS).getSelfVolumeMultiplier(_add);
     uint256 userRefVolMult = REFERRALS == address(0) ? 0 : ISummitReferrals(REFERRALS).getRefVolumeMultiplier(_add);
     pointsFromSelf = (SELF_VOLUME[_add] * userSelfVolMult * BASE_VOLUME_SCALER) / (10000 * 10000);

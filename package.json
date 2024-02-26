@@ -18,7 +18,7 @@
     "deploy:dogechain": "npx hardhat deploy --network dogechain --tags dogechain",
     "deploy:blasttest": "npx hardhat deploy --network blasttest --tags blasttest",
     "deploy:fantom": "npx hardhat deploy --network fantom --tags fantom",
-    "ignite:fantom": "npx hardhat ignition deploy ignition/modules/SummitSwapEcosystem.js --network fantom",
+    "ignite:fantom": "npx hardhat ignition deploy ignition/modules/SummitSwapEcosystem.js --network fantom --verify",
     "solhint": "./node_modules/.bin/solhint -f table ./src/contracts/**/*.sol",
     "prettier:solidity:write": "./node_modules/.bin/prettier -w ./src/contracts",
     "prettier:solidity": "./node_modules/.bin/prettier -c ./src/contracts",
