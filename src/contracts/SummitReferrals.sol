@@ -18,10 +18,10 @@ import "./lib/Maintainable.sol";
 // | ---      | ---             | ---     | ---                   | ---                       | ---                     |
 // | Wood     |                 | 0       | 0                     | 0                         | 0                       |
 // | Bronze   | Can refer       | 2%      | 100                   | 0                         | 0                       |
-// | Silver   |                 | 4%      | 1000                  | 10000                     | 3                       |
+// | Silver   |                 | 3%      | 1000                  | 10000                     | 3                       |
 // | Gold     |                 | 5%      | 2000                  | 25000                     | 5                       |
 // | Platinum |                 | 7%      | 5000                  | 100000                    | 10                      |
-// | Noble    |                 | 15%     | 25000                 | 1000000                   | 25                      |
+// | Noble    |                 | 10%     | 25000                 | 1000000                   | 25                      |
 
 contract SummitReferrals is Maintainable, ISummitReferrals {
     using SafeMath for uint256;
@@ -57,7 +57,7 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
       uint256[6] memory refVolumeReq = [uint256(0), 0, 10000e18, 25000e18, 100000e18, 1000000e18];
       uint256[6] memory selfVolumeReq = [uint256(0), 100e18, 1000e18, 2000e18, 5000e18, 25000e18];
       uint256[6] memory refsReq = [uint256(0), 0, 3, 5, 10, 25];
-      uint256[6] memory multReward = [uint256(0), 200, 400, 500, 700, 1500];
+      uint256[6] memory multReward = [uint256(0), 200, 500, 500, 700, 1000];
 
       for (uint256 i = 0; i < levelCount; i++) {
         LEVEL_REF_VOLUME_REQ[i] = refVolumeReq[i];
@@ -187,7 +187,7 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     }
 
     function getRefVolumeMultiplier(address _add) override public view returns (uint256) {
-      return 10000 + (LEVEL_MULT_REWARD[getReferrerLevel(_add)]);
+      return LEVEL_MULT_REWARD[getReferrerLevel(_add)];
     }
 
     function getSelfVolumeMultiplier(address _add) override public view returns (uint256) {

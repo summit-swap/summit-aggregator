@@ -81,11 +81,46 @@ const SummitOracleModule = buildModule("SummitOracle", (m) => {
 });
 
 module.exports = buildModule("SummitSwapEcosystem", (m) => {
-  const { summitRouter } = m.useModule(SummitRouterModule);
-  const { summitPoints } = m.useModule(SummitPointsModule);
-  const { summitReferrals } = m.useModule(SummitReferralsModule);
-  const { summitVolumeAdapter } = m.useModule(SummitVolumeAdapterModule);
-  const { summitOracle } = m.useModule(SummitOracleModule);
+  const deployer = m.getAccount(0);
+
+  const spookySwapAdapter = m.contract(
+    "UniswapV2Adapter",
+    [spookySwapData.name, spookySwapData.factory, spookySwapData.fee, spookySwapData.gasEstimate],
+    { id: spookySwapData.name }
+  );
+
+  const spiritSwapAdapter = m.contract(
+    "UniswapV2Adapter",
+    [spiritSwapData.name, spiritSwapData.factory, spiritSwapData.fee, spiritSwapData.gasEstimate],
+    { id: spiritSwapData.name, after: [spookySwapAdapter] }
+  );
+
+  const summitRouter = m.contract(
+    "SummitRouter",
+    [[spookySwapAdapter, spiritSwapAdapter], deployOptions.hopTokens, deployer, deployOptions.wnative],
+    {
+      after: [spiritSwapAdapter],
+    }
+  );
+
+  const summitPoints = m.contract("SummitPoints", [], { after: [summitRouter] });
+  m.call(summitPoints, "initialize", [deployer]);
+
+  const summitReferrals = m.contract("SummitReferrals", [], { after: [summitPoints] });
+  m.call(summitReferrals, "initialize", [deployer]);
+
+  const summitVolumeAdapter = m.contract("SummitVolumeAdapterV1", [], { after: [summitReferrals] });
+  m.call(summitVolumeAdapter, "initialize", [deployer]);
+
+  const summitOracle = m.contract("SummitOracle", [summitRouter, deployOptions.oracle.stable, deployOptions.wnative], {
+    after: [summitVolumeAdapter],
+  });
+
+  // const { summitRouter } = m.useModule(SummitRouterModule);
+  // const { summitPoints } = m.useModule(SummitPointsModule);
+  // const { summitReferrals } = m.useModule(SummitReferralsModule);
+  // const { summitVolumeAdapter } = m.useModule(SummitVolumeAdapterModule);
+  // const { summitOracle } = m.useModule(SummitOracleModule);
 
   // Points Contract
   m.call(summitPoints, "setVolumeAdapter", [summitVolumeAdapter]);
