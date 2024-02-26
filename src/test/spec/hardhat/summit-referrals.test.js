@@ -1,10 +1,10 @@
 const { expect } = require("chai");
 const { setTestEnv, addresses, helpers } = require("../../utils/test-env");
-const { waffle } = require("hardhat");
-const { loadFixture } = waffle;
+const { ethers } = require("hardhat");
+const { loadFixture } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 
 const e18 = (n) => {
-  return ethers.utils.parseUnits(`${n}`);
+  return ethers.parseUnits(`${n}`);
 };
 
 describe("SummitReferrals", function () {
@@ -61,18 +61,18 @@ describe("SummitReferrals", function () {
     await referrals.initialize(deployer.address);
 
     // Already initialized should revert
-    await expect(referrals.initialize(deployer.address)).to.be.revertedWith("AlreadyInitialized");
+    await expect(referrals.initialize(deployer.address)).to.be.revertedWithCustomError(referrals, "AlreadyInitialized");
   });
 
   it("Set Points Contract", async () => {
     const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
 
-    await expect(referrals.setPointsContract(points.address))
+    await expect(referrals.setPointsContract(points.target))
       .to.emit(referrals, "UpdatedPointsContract")
-      .withArgs(points.address);
+      .withArgs(points.target);
 
     const pointsAdd = await referrals.SUMMIT_POINTS();
-    expect(pointsAdd).to.eq(points.address);
+    expect(pointsAdd).to.eq(points.target);
   });
 
   it("Boost Referrer", async () => {
@@ -102,26 +102,36 @@ describe("SummitReferrals", function () {
     await referrals.boostReferrer(user2.address, 4);
 
     // . Missing Referrer
-    await expect(referrals.setReferrer(zeroAdd, "")).to.be.revertedWith("MissingReferral");
+    await expect(referrals.setReferrer(zeroAdd, "")).to.be.revertedWithCustomError(referrals, "MissingReferral");
 
     // . Self Referral
-    await expect(referrals.setReferrer(deployer.address, "")).to.be.revertedWith("SelfReferral");
+    await expect(referrals.setReferrer(deployer.address, "")).to.be.revertedWithCustomError(referrals, "SelfReferral");
 
     // . Already Referred by User
     await referrals.connect(user1).setReferrer(deployer.address, "");
-    await expect(referrals.connect(user1).setReferrer(deployer.address, "")).to.be.revertedWith(
+    await expect(referrals.connect(user1).setReferrer(deployer.address, "")).to.be.revertedWithCustomError(
+      referrals,
       "AlreadyReferredByUser"
     );
 
     // . Reciprocal Referral
-    await expect(referrals.setReferrer(user1.address, "")).to.be.revertedWith("ReciprocalReferral");
+    await expect(referrals.setReferrer(user1.address, "")).to.be.revertedWithCustomError(
+      referrals,
+      "ReciprocalReferral"
+    );
 
     // . Tri Reciprocal Referral
     await referrals.connect(user2).setReferrer(user1.address, "");
-    await expect(referrals.setReferrer(user2.address, "")).to.be.revertedWith("ReciprocalReferral");
+    await expect(referrals.setReferrer(user2.address, "")).to.be.revertedWithCustomError(
+      referrals,
+      "ReciprocalReferral"
+    );
 
     // . Referrer must be bronze
-    await expect(referrals.setReferrer(user3.address, "")).to.be.revertedWith("MustBeAtLeastBronze");
+    await expect(referrals.setReferrer(user3.address, "")).to.be.revertedWithCustomError(
+      referrals,
+      "MustBeAtLeastBronze"
+    );
   });
 
   it("Set Referrer Successes", async () => {
@@ -180,13 +190,19 @@ describe("SummitReferrals", function () {
     const { referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
 
     // . Revert if not bronze
-    await expect(referrals.connect(deployer).setReferralCode("XXXX")).to.be.revertedWith("MustBeAtLeastBronze");
+    await expect(referrals.connect(deployer).setReferralCode("XXXX")).to.be.revertedWithCustomError(
+      referrals,
+      "MustBeAtLeastBronze"
+    );
     await referrals.boostReferrer(deployer.address, 4);
     await expect(referrals.connect(deployer).setReferralCode("XXXX")).to.not.be.reverted;
 
     // . Revert if code not available
     await referrals.boostReferrer(user1.address, 4);
-    await expect(referrals.connect(user1).setReferralCode("XXXX")).to.be.revertedWith("CodeNotAvailable");
+    await expect(referrals.connect(user1).setReferralCode("XXXX")).to.be.revertedWithCustomError(
+      referrals,
+      "CodeNotAvailable"
+    );
     await expect(referrals.connect(user1).setReferralCode("XXXXX")).to.not.be.reverted;
 
     // . Ref code should be set
@@ -221,7 +237,10 @@ describe("SummitReferrals", function () {
     await referrals.connect(deployer).setReferralCode("XXXX");
 
     // . Revert if no code match
-    await expect(referrals.connect(user1).setReferrer(zeroAdd, "YYYY")).to.be.revertedWith("MissingReferral");
+    await expect(referrals.connect(user1).setReferrer(zeroAdd, "YYYY")).to.be.revertedWithCustomError(
+      referrals,
+      "MissingReferral"
+    );
 
     // . Succeed if code match
     await expect(referrals.connect(user1).setReferrer(zeroAdd, "XXXX"))
@@ -233,18 +252,18 @@ describe("SummitReferrals", function () {
     const { referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
 
     // . Length Mismatch
-    await expect(referrals.setLevelData([0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], 0)).to.be.revertedWith(
-      "LengthMismatch"
-    );
-    await expect(referrals.setLevelData([0, 0, 0, 0], [0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], 0)).to.be.revertedWith(
-      "LengthMismatch"
-    );
-    await expect(referrals.setLevelData([0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0], [0, 0, 0, 0], 0)).to.be.revertedWith(
-      "LengthMismatch"
-    );
-    await expect(referrals.setLevelData([0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0], 0)).to.be.revertedWith(
-      "LengthMismatch"
-    );
+    await expect(
+      referrals.setLevelData([0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], 0)
+    ).to.be.revertedWithCustomError(referrals, "LengthMismatch");
+    await expect(
+      referrals.setLevelData([0, 0, 0, 0], [0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], 0)
+    ).to.be.revertedWithCustomError(referrals, "LengthMismatch");
+    await expect(
+      referrals.setLevelData([0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0], [0, 0, 0, 0], 0)
+    ).to.be.revertedWithCustomError(referrals, "LengthMismatch");
+    await expect(
+      referrals.setLevelData([0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0], 0)
+    ).to.be.revertedWithCustomError(referrals, "LengthMismatch");
 
     // . Event emitted
     // . Level Count Updated
@@ -254,7 +273,7 @@ describe("SummitReferrals", function () {
       .to.emit(referrals, "UpdatedLevelData")
       .withArgs([0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], 1);
 
-    const levelCount = await referrals.levelCount();
+    const levelCount = parseInt(await referrals.levelCount());
     expect(levelCount).to.eq(4);
 
     const bonusForBeingReferred = await referrals.BONUS_FOR_BEING_REFERRED();
@@ -274,7 +293,7 @@ describe("SummitReferrals", function () {
     const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
 
     // . REVERT: Invalid Level
-    await expect(referrals.getLevelRequirements(10)).to.be.revertedWith("InvalidLevel");
+    await expect(referrals.getLevelRequirements(10)).to.be.revertedWithCustomError(referrals, "InvalidLevel");
 
     const level4SelfVolReq = await referrals.LEVEL_SELF_VOLUME_REQ(4);
     const level4RefVolReq = await referrals.LEVEL_REF_VOLUME_REQ(4);
@@ -290,13 +309,13 @@ describe("SummitReferrals", function () {
     const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
 
     await referrals.boostReferrer(user1.address, 0);
-    const volMult0 = parseInt(await referrals.getRefVolumeMultiplier(user1.address));
-    expect(volMult0).to.eq(10000);
+    const volMult0 = parseInt(await referrals.getRefVolumeBonusMultiplier(user1.address));
+    expect(volMult0).to.eq(0);
 
     await referrals.boostReferrer(user1.address, 4);
     const expectedVolMult4 = parseInt(await referrals.LEVEL_MULT_REWARD(4));
-    const volMult4 = parseInt(await referrals.getRefVolumeMultiplier(user1.address));
-    expect(volMult4).to.eq(10000 + expectedVolMult4);
+    const volMult4 = parseInt(await referrals.getRefVolumeBonusMultiplier(user1.address));
+    expect(volMult4).to.eq(expectedVolMult4);
   });
 
   it("Get Self Volume Multiplier", async () => {
@@ -317,11 +336,14 @@ describe("SummitReferrals", function () {
   it("Referrer Level", async () => {
     const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
     await points.setVolumeAdapter(deployer.address);
-    await points.setReferralsContract(referrals.address);
-    await referrals.setPointsContract(points.address);
+    await points.setReferralsContract(referrals.target);
+    await referrals.setPointsContract(points.target);
 
     // . SUCCEED: Wood --> Bronze
-    await expect(referrals.connect(user2).setReferrer(user1.address, "")).to.be.revertedWith("MustBeAtLeastBronze");
+    await expect(referrals.connect(user2).setReferrer(user1.address, "")).to.be.revertedWithCustomError(
+      referrals,
+      "MustBeAtLeastBronze"
+    );
 
     await points.addVolume(user1.address, e18(100));
 

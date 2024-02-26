@@ -40,7 +40,7 @@ describe("Maintainable", () => {
     });
 
     it("Does not allow a non-maintainer to call an onlyMaintainer function", async () => {
-      await expect(DummyMaintainable.connect(nonOwner).onlyMaintainerFunction()).to.be.revertedWith(
+      await expect(DummyMaintainable.connect(nonOwner).onlyMaintainerFunction()).to.be.revertedWithCustomError(
         "Maintainable: Caller is not a maintainer"
       );
     });
@@ -53,7 +53,7 @@ describe("Maintainable", () => {
     it("Does not allow a maintainer to call an onlyMaintainer function after the owner has revoked their role", async () => {
       await DummyMaintainable.connect(owner).addMaintainer(nonOwner.address);
       await DummyMaintainable.connect(owner).removeMaintainer(nonOwner.address);
-      await expect(DummyMaintainable.connect(nonOwner).onlyMaintainerFunction()).to.be.revertedWith(
+      await expect(DummyMaintainable.connect(nonOwner).onlyMaintainerFunction()).to.be.revertedWithCustomError(
         "Maintainable: Caller is not a maintainer"
       );
     });
@@ -68,16 +68,16 @@ describe("Maintainable", () => {
       it("Does not allow a maintainer to add a new maintainer", async () => {
         await DummyMaintainable.connect(owner).addMaintainer(nonOwner.address);
         const newAccount = genNewAccount();
-        await expect(DummyMaintainable.connect(nonOwner).addMaintainer(newAccount.address)).to.be.revertedWith(
-          "AccessControl"
-        );
+        await expect(
+          DummyMaintainable.connect(nonOwner).addMaintainer(newAccount.address)
+        ).to.be.revertedWithCustomError("AccessControl");
       });
 
       it("Does not allow a random user to add a new maintainer", async () => {
         const newAccount = genNewAccount();
-        await expect(DummyMaintainable.connect(nonOwner).addMaintainer(newAccount.address)).to.be.revertedWith(
-          "AccessControl"
-        );
+        await expect(
+          DummyMaintainable.connect(nonOwner).addMaintainer(newAccount.address)
+        ).to.be.revertedWithCustomError("AccessControl");
       });
     });
 
@@ -91,17 +91,17 @@ describe("Maintainable", () => {
         await DummyMaintainable.connect(owner).addMaintainer(nonOwner.address);
         const newAccount = genNewAccount();
         await DummyMaintainable.connect(owner).addMaintainer(nonOwner.address);
-        await expect(DummyMaintainable.connect(nonOwner).removeMaintainer(newAccount.address)).to.be.revertedWith(
-          "AccessControl"
-        );
+        await expect(
+          DummyMaintainable.connect(nonOwner).removeMaintainer(newAccount.address)
+        ).to.be.revertedWithCustomError("AccessControl");
       });
 
       it("Does not allow a random user to remove a maintainer", async () => {
         await DummyMaintainable.connect(owner).addMaintainer(nonOwner.address);
         const newAccount = genNewAccount();
-        await expect(DummyMaintainable.connect(newAccount).removeMaintainer(nonOwner.address)).to.be.revertedWith(
-          "AccessControl"
-        );
+        await expect(
+          DummyMaintainable.connect(newAccount).removeMaintainer(nonOwner.address)
+        ).to.be.revertedWithCustomError("AccessControl");
       });
     });
   });
@@ -114,22 +114,22 @@ describe("Maintainable", () => {
     it("Does not allow the owner to add a maintainer after transfering ownership", async () => {
       await DummyMaintainable.connect(owner).transferOwnership(nonOwner.address);
       const newAccount = genNewAccount();
-      await expect(DummyMaintainable.connect(owner).addMaintainer(newAccount.address)).to.be.revertedWith(
+      await expect(DummyMaintainable.connect(owner).addMaintainer(newAccount.address)).to.be.revertedWithCustomError(
         "AccessControl"
       );
     });
 
     it("Does not allow a maintainer to transfer ownership", async () => {
       DummyMaintainable.connect(owner).addMaintainer(nonOwner.address);
-      await expect(DummyMaintainable.connect(nonOwner).transferOwnership(nonOwner.address)).to.be.revertedWith(
-        "AccessControl"
-      );
+      await expect(
+        DummyMaintainable.connect(nonOwner).transferOwnership(nonOwner.address)
+      ).to.be.revertedWithCustomError("AccessControl");
     });
 
     it("Does not allow a random user to transfer ownership", async () => {
-      await expect(DummyMaintainable.connect(nonOwner).transferOwnership(nonOwner.address)).to.be.revertedWith(
-        "AccessControl"
-      );
+      await expect(
+        DummyMaintainable.connect(nonOwner).transferOwnership(nonOwner.address)
+      ).to.be.revertedWithCustomError("AccessControl");
     });
   });
 

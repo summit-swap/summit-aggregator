@@ -1,10 +1,8 @@
 const { expect } = require("chai");
-const { ethers } = require("hardhat");
-const { parseUnits } = ethers.utils;
 
 const { setERC20Bal } = require("../helpers");
 
-const BN_ZERO = ethers.constants.AddressZero;
+const BN_ZERO = "0x0000000000000000000000000000000000000000";
 const DEFAULT_ERROR_BPS = 0;
 
 class AdapterTestEnv {
@@ -20,7 +18,7 @@ class AdapterTestEnv {
 
   async checkQueryReturnsZeroForUnsupportedTkns(supportedTkn) {
     const amountIn = parseUnits("1", 6);
-    const dummyTkn = ethers.constants.AddressZero;
+    const dummyTkn = "0x0000000000000000000000000000000000000000";
     const supportedTknAdd = supportedTkn.address;
     await Promise.all([
       this.queryMatches(amountIn, dummyTkn, supportedTknAdd, BN_ZERO),

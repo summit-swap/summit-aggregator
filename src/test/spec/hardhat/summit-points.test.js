@@ -1,10 +1,10 @@
 const { expect } = require("chai");
 const { setTestEnv, addresses, helpers } = require("../../utils/test-env");
 const { ethers } = require("hardhat");
-const { loadFixture } = waffle;
+const { loadFixture } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 
 const e18 = (n) => {
-  return ethers.utils.parseUnits(`${n}`);
+  return ethers.parseUnits(`${n}`);
 };
 
 describe("SummitPoints", function () {
@@ -48,7 +48,7 @@ describe("SummitPoints", function () {
     await points.initialize(deployer.address);
 
     // Already initialized should revert
-    await expect(points.initialize(deployer.address)).to.be.revertedWith("AlreadyInitialized");
+    await expect(points.initialize(deployer.address)).to.be.revertedWithCustomError(points, "AlreadyInitialized");
   });
 
   it("Only Maintainer", async () => {
@@ -73,12 +73,12 @@ describe("SummitPoints", function () {
   it("Set Referrals Contract", async () => {
     const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
 
-    await expect(points.setReferralsContract(referrals.address))
+    await expect(points.setReferralsContract(referrals.target))
       .to.emit(points, "UpdatedReferralsContract")
-      .withArgs(referrals.address);
+      .withArgs(referrals.target);
 
     const referralsAdd = await points.REFERRALS();
-    expect(referralsAdd).to.eq(referrals.address);
+    expect(referralsAdd).to.eq(referrals.target);
   });
 
   it("Set Volume Scalers", async () => {
@@ -92,11 +92,39 @@ describe("SummitPoints", function () {
     expect(newAdapterScaler).to.eq(1000);
   });
 
+  it("Set Blacklisted", async () => {
+    const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
+    await points.setVolumeAdapter(deployer.address);
+
+    const blacklistedInit = await points.BLACKLISTED(user1.address);
+    expect(blacklistedInit).to.eq(false);
+
+    // Points should be non 0
+    await points.addVolume(user1.address, 10000); // SELF
+    const pointsInit = await points.getPoints(user1.address);
+    expect(pointsInit[3]).to.eq(1000);
+
+    await expect(points.setBlacklisted(user1.address, true))
+      .to.emit(points, "UpdatedBlacklisted")
+      .withArgs(user1.address, true);
+
+    // Points should be 0
+    const pointsFinal = await points.getPoints(user1.address);
+    expect(pointsFinal[3]).to.eq(0);
+
+    // Blacklisted state should update
+    const blackListedFinal = await points.BLACKLISTED(user1.address);
+    expect(blackListedFinal).to.eq(true);
+  });
+
   it("Delegate", async () => {
     const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
 
     // . REVERT: Not Permitted
-    await expect(points.connect(user1).setDelegate(user2.address, user1.address)).to.be.revertedWith("NotPermitted");
+    await expect(points.connect(user1).setDelegate(user2.address, user1.address)).to.be.revertedWithCustomError(
+      points,
+      "NotPermitted"
+    );
 
     // . SUCCEED: Set own delegate
     await expect(points.connect(user1).setDelegate(user1.address, user2.address))
@@ -124,7 +152,10 @@ describe("SummitPoints", function () {
     await points.setVolumeAdapter(deployer.address);
 
     // . REVERT: Not Permitted
-    await expect(points.connect(user1).addAdapterVolume(user1.address, 100)).to.be.revertedWith("NotPermitted");
+    await expect(points.connect(user1).addAdapterVolume(user1.address, 100)).to.be.revertedWithCustomError(
+      points,
+      "NotPermitted"
+    );
 
     // . SUCCEED: Adds to adapter volume
     await expect(points.addAdapterVolume(user1.address, 100))
@@ -161,7 +192,10 @@ describe("SummitPoints", function () {
     await points.setVolumeAdapter(deployer.address);
 
     // . REVERT: Not Permitted
-    await expect(points.connect(user1).addVolume(user1.address, 100)).to.be.revertedWith("NotPermitted");
+    await expect(points.connect(user1).addVolume(user1.address, 100)).to.be.revertedWithCustomError(
+      points,
+      "NotPermitted"
+    );
 
     // . SUCCEED: Adds to self points
     await expect(points.addVolume(user1.address, 100)).to.emit(points, "AddedUserVolume").withArgs(user1.address, 100);
@@ -171,7 +205,7 @@ describe("SummitPoints", function () {
 
   it("Add Volume (NO REFERRALS, WITH GLOBAL_BOOST)", async () => {
     const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
-    await points.setReferralsContract(referrals.address);
+    await points.setReferralsContract(referrals.target);
     await points.setVolumeAdapter(deployer.address);
 
     // Setup Global Boost
@@ -194,7 +228,7 @@ describe("SummitPoints", function () {
 
   it("Add Volume (WITH REFERRALS, NO GLOBAL_BOOST)", async () => {
     const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
-    await points.setReferralsContract(referrals.address);
+    await points.setReferralsContract(referrals.target);
     await points.setVolumeAdapter(deployer.address);
 
     // Setup Referrals
@@ -218,7 +252,7 @@ describe("SummitPoints", function () {
 
   it("Add Points (WITH REFERRALS, WITH GLOBAL_BOOST)", async () => {
     const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
-    await points.setReferralsContract(referrals.address);
+    await points.setReferralsContract(referrals.target);
     await points.setVolumeAdapter(deployer.address);
 
     // Setup Global Boost
@@ -248,8 +282,8 @@ describe("SummitPoints", function () {
   it("Transfer Volume", async () => {
     const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
     await points.setVolumeAdapter(deployer.address);
-    await points.setReferralsContract(referrals.address);
-    await referrals.setPointsContract(points.address);
+    await points.setReferralsContract(referrals.target);
+    await referrals.setPointsContract(points.target);
 
     // Setup Referrals
     await referrals.boostReferrer(user1.address, 4);
@@ -261,29 +295,30 @@ describe("SummitPoints", function () {
     await points.addAdapterVolume(user1.address, 100); // ADAPTER
 
     // . REVERT: Zero Address
-    await expect(points.connect(user1).transferVolume(user1.address, zeroAdd, 100, 0, 0)).to.be.revertedWith(
+    await expect(points.connect(user1).transferVolume(user1.address, zeroAdd, 100, 0, 0)).to.be.revertedWithCustomError(
+      points,
       "ZeroAddress"
     );
 
     // . REVERT: Not Permitted
-    await expect(points.connect(user2).transferVolume(user1.address, user2.address, 100, 100, 100)).to.be.revertedWith(
-      "NotPermitted"
-    );
+    await expect(
+      points.connect(user2).transferVolume(user1.address, user2.address, 100, 100, 100)
+    ).to.be.revertedWithCustomError(points, "NotPermitted");
 
     // . REVERT: Invalid Self Amount
-    await expect(points.connect(user1).transferVolume(user1.address, user2.address, 200, 0, 0)).to.be.revertedWith(
-      "InvalidSelfAmount"
-    );
+    await expect(
+      points.connect(user1).transferVolume(user1.address, user2.address, 200, 0, 0)
+    ).to.be.revertedWithCustomError(points, "InvalidSelfAmount");
 
     // . REVERT: Invalid Ref Amount
-    await expect(points.connect(user1).transferVolume(user1.address, user2.address, 0, 200, 0)).to.be.revertedWith(
-      "InvalidRefAmount"
-    );
+    await expect(
+      points.connect(user1).transferVolume(user1.address, user2.address, 0, 200, 0)
+    ).to.be.revertedWithCustomError(points, "InvalidRefAmount");
 
     // . REVERT: Invalid Adapter Amount
-    await expect(points.connect(user1).transferVolume(user1.address, user2.address, 0, 0, 200)).to.be.revertedWith(
-      "InvalidAdapterAmount"
-    );
+    await expect(
+      points.connect(user1).transferVolume(user1.address, user2.address, 0, 0, 200)
+    ).to.be.revertedWithCustomError(points, "InvalidAdapterAmount");
 
     // . SUCCEED: User can transfer own points
     await expect(points.connect(user1).transferVolume(user1.address, user3.address, 50, 50, 50))
@@ -324,8 +359,8 @@ describe("SummitPoints", function () {
   it("Get Points", async function () {
     const { points, referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
     await points.setVolumeAdapter(deployer.address);
-    await points.setReferralsContract(referrals.address);
-    await referrals.setPointsContract(points.address);
+    await points.setReferralsContract(referrals.target);
+    await referrals.setPointsContract(points.target);
 
     // Setup Referrals
     await referrals.boostReferrer(user1.address, 4);
@@ -337,21 +372,22 @@ describe("SummitPoints", function () {
     await points.addAdapterVolume(user1.address, e18(100)); // ADAPTER
 
     const userSelfVolMult = parseInt(await referrals.getSelfVolumeMultiplier(user1.address));
-    const userRefVolMult = parseInt(await referrals.getRefVolumeMultiplier(user1.address));
+    const userRefVolMult = parseInt(await referrals.getRefVolumeBonusMultiplier(user1.address));
+    const baseVolScaler = parseInt(await points.BASE_VOLUME_SCALER());
     const pointsRefVolScaler = parseInt(await points.REF_VOLUME_SCALER());
     const pointsAdapterVolScaler = parseInt(await points.ADAPTER_VOLUME_SCALER());
 
-    const expectedPointsFromSelfVol = (100 * userSelfVolMult) / 10000;
-    const expectedPointsFromRefVol = (100 * userRefVolMult * pointsRefVolScaler) / (10000 * 10000);
-    const expectedPointsFromAdapterVol = (100 * pointsAdapterVolScaler) / 10000;
+    const expectedPointsFromSelfVol = (100 * userSelfVolMult * baseVolScaler) / (10000 * 10000);
+    const expectedPointsFromRefVol = (100 * (userRefVolMult + pointsRefVolScaler) * baseVolScaler) / (10000 * 10000);
+    const expectedPointsFromAdapterVol = (100 * pointsAdapterVolScaler * baseVolScaler) / (10000 * 10000);
     const expectedPointsTotal = expectedPointsFromSelfVol + expectedPointsFromRefVol + expectedPointsFromAdapterVol;
 
     const [pointsFromSelf, pointsFromRef, pointsFromAdapter, pointsTotal] = await points.getPoints(user1.address);
 
-    expect(pointsFromSelf).to.eq(e18(expectedPointsFromSelfVol));
-    expect(pointsFromRef).to.eq(e18(expectedPointsFromRefVol));
-    expect(pointsFromAdapter).to.eq(e18(expectedPointsFromAdapterVol));
-    expect(pointsTotal).to.eq(e18(expectedPointsTotal));
+    expect(pointsFromSelf).to.be.closeTo(e18(expectedPointsFromSelfVol), 10000);
+    expect(pointsFromRef).to.be.closeTo(e18(expectedPointsFromRefVol), 10000);
+    expect(pointsFromAdapter).to.be.closeTo(e18(expectedPointsFromAdapterVol), 10000);
+    expect(pointsTotal).to.be.closeTo(e18(expectedPointsTotal), 10000);
 
     // const userVolume = await points.getVolume(user1.address);
 

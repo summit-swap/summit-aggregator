@@ -23,6 +23,6 @@ interface ISummitReferrals {
   function getRefsCount(address _add) external view returns (uint256);
   function getReferrerLevel(address _add) external view returns (uint8);
   function getLevelRequirements(uint8 _level) external view returns (uint256 selfVolume, uint256 refVolume, uint256 refsCount);
-  function getRefVolumeMultiplier(address _add) external view returns (uint256);
+  function getRefVolumeBonusMultiplier(address _add) external view returns (uint256);
   function getSelfVolumeMultiplier(address _add) external view returns (uint256);
 }

@@ -28,23 +28,8 @@ contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
 
   uint256 public GLOBAL_BOOST = 0;
   uint256 public BASE_VOLUME_SCALER = 1000; // 10%
-  uint256 public REF_VOLUME_SCALER = 500; // 5% - 
+  uint256 public REF_VOLUME_SCALER = 500; // 5% - 15% based on bonus multiplier from referrals
   uint256 public ADAPTER_VOLUME_SCALER = 100; // 1%
-
-
-  /*
-    Yankee:
-      Self: 10m in volume
-      Ref: 5m in volume
-
-      0.1 * (10m + 5m) = 1m points
-
-    SpookySwap:
-      Adapter: 50m in volume
-
-
-
-  */
 
   error AlreadyInitialized();
   error ZeroAddress();
@@ -93,6 +78,11 @@ contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
   function setGlobalBoost(uint256 _boost) override public onlyMaintainer {
     GLOBAL_BOOST = _boost;
     emit UpdatedGlobalBoost(_boost);
+  }
+
+  function setBlacklisted(address _add, bool _blacklisted) override public onlyMaintainer {
+    BLACKLISTED[_add] = _blacklisted;
+    emit UpdatedBlacklisted(_add, _blacklisted);
   }
 
   function setDelegate(address _user, address _delegate) override public {
@@ -164,7 +154,7 @@ contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
   function getPoints(address _add) override public view returns (uint256 pointsFromSelf, uint256 pointsFromRef, uint256 pointsFromAdapter, uint256 pointsTotal) {
     if (BLACKLISTED[_add]) return (0, 0, 0, 0);
     uint256 userSelfVolMult = REFERRALS == address(0) ? 10000 : ISummitReferrals(REFERRALS).getSelfVolumeMultiplier(_add);
-    uint256 userRefVolMult = REFERRALS == address(0) ? 0 : ISummitReferrals(REFERRALS).getRefVolumeMultiplier(_add);
+    uint256 userRefVolMult = REFERRALS == address(0) ? 0 : ISummitReferrals(REFERRALS).getRefVolumeBonusMultiplier(_add);
     pointsFromSelf = (SELF_VOLUME[_add] * userSelfVolMult * BASE_VOLUME_SCALER) / (10000 * 10000);
     pointsFromRef = (REF_VOLUME[_add] * (REF_VOLUME_SCALER + userRefVolMult) * BASE_VOLUME_SCALER) / (10000 * 10000);
     pointsFromAdapter = (ADAPTER_VOLUME[_add] * ADAPTER_VOLUME_SCALER * BASE_VOLUME_SCALER) / (10000 * 10000);

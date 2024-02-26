@@ -45,7 +45,9 @@ describe("SummitAdapter - geode", () => {
     });
 
     it("cant set invalid interface", async () => {
-      await expect(Adapter.setInterfaceForPooledTkn(ate.deployer.address)).to.revertedWith("Not valid interface");
+      await expect(Adapter.setInterfaceForPooledTkn(ate.deployer.address)).to.revertedWithCustomError(
+        "Not valid interface"
+      );
     });
 
     it("revoke/set token allowance", async () => {

@@ -12,6 +12,7 @@ interface ISummitPoints {
   event UpdatedReferralsContract(address indexed _referrals);
   event UpdatedGlobalBoost(uint256 _boost);
   event UpdatedVolumeScalers(uint256 _refVolumeScaler, uint256 _adapterVolumeScaler);
+  event UpdatedBlacklisted(address _add,bool _blacklisted);
   event AddedUserVolume(address indexed _user, uint256 _volume);
   event AddedReferrerVolume(address indexed _referrer, address indexed _user, uint256 _volume);
   event AddedAdapterVolume(address indexed _adapter, uint256 _volume);
@@ -23,6 +24,7 @@ interface ISummitPoints {
   function setVolumeAdapter(address _volumeAdapter) external;
   function setReferralsContract(address _referrals) external;
   function setGlobalBoost(uint256 _boost) external;
+  function setBlacklisted(address _add, bool _blacklisted) external;
   function summitTeamGivePoints(address _add, uint256 _volume) external;
   function setVolumeScalers(uint256 _refVolumeScaler, uint256 _adapterVolumeScaler) external;
   function setDelegate(address _user, address _delegate) external;

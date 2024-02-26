@@ -186,7 +186,7 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
       return REF_COUNT[_add];
     }
 
-    function getRefVolumeMultiplier(address _add) override public view returns (uint256) {
+    function getRefVolumeBonusMultiplier(address _add) override public view returns (uint256) {
       return LEVEL_MULT_REWARD[getReferrerLevel(_add)];
     }
 
