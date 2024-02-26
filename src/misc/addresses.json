@@ -573,5 +573,8 @@
     "liquidityBook": {
       "router": "0x0C344c52841d3F8d488E1CcDBafB42CE2C7fdFA9"
     }
+  },
+  "blasttest": {
+    "assets": {}
   }
 }

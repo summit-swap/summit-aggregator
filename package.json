@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test:hardhat": "npx hardhat test ./src/test/spec/hardhat/*.test.js",
     "test:avalanche": "npx hardhat test ./src/test/spec/avalanche/**/*.spec.js",
     "test:arbitrum": "npx hardhat test ./src/test/spec/arbitrum/**/*.spec.js",
     "test:optimism": "npx hardhat test ./src/test/spec/optimism/**/*.spec.js",

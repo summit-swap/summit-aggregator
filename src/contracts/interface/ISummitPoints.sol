@@ -8,19 +8,26 @@
 pragma solidity ^0.8.0;
 
 interface ISummitPoints {
-  event UpdatedPointsAdapter(address indexed _pointsAdapter);
+  event UpdatedVolumeAdapter(address indexed _volumeAdapter);
   event UpdatedReferralsContract(address indexed _referrals);
-  event AddedPoints(address indexed _user, uint256 _amount);
-  event TransferredPoints(address indexed _executor, address indexed _from, address indexed _to, uint256 _amount);
+  event UpdatedGlobalBoost(uint256 _boost);
+  event UpdatedVolumeScalers(uint256 _refVolumeScaler, uint256 _adapterVolumeScaler);
+  event AddedUserVolume(address indexed _user, uint256 _volume);
+  event AddedReferrerVolume(address indexed _referrer, address indexed _user, uint256 _volume);
+  event AddedAdapterVolume(address indexed _adapter, uint256 _volume);
+  event TransferredVolume(address indexed _executor, address indexed _from, address indexed _to, uint256 _selfVolume, uint256 _refVolume, uint256 _adapterVolume);
   event UpdatedDelegate(address indexed _executor, address indexed _user, address indexed _delegate);
   event UpdatedAdapterDelegate(address indexed _adapter, address indexed _delegate);
 
-  function setPointsAdapter(address _pointsAdapter) external;
+  function setVolumeAdapter(address _volumeAdapter) external;
   function setReferralsContract(address _referrals) external;
-  function getPoints(address _add) external view returns (uint256 selfPoints, uint256 refPoints);
-  function getPointsAndReferralData(address _add) external view returns (uint256 selfPoints, uint256 refPoints, uint256 refCount, uint8 level);
-  function addPoints(address _add, uint256 _amount) external;
-  function transferPoints(address _from, address _to) external;
+  function setGlobalBoost(uint256 _boost) external;
+  function setVolumeScalers(uint256 _refVolumeScaler, uint256 _adapterVolumeScaler) external;
   function setDelegate(address _user, address _delegate) external;
   function setAdapterDelegate(address _adapter, address _delegate) external;
+  function addVolume(address _add, uint256 _volume) external;
+  function addAdapterVolume(address _adapter, uint256 _volume) external;
+  function transferVolume(address _from, address _to, uint256 _selfVolume, uint256 _refVolume, uint256 _adapterVolume) external;
+  function getVolume(address _add) external view returns (uint256 selfVolume, uint256 refVolume, uint256 adapterVolume);
+  function getPoints(address _add) external view returns (uint256 pointsFromSelf, uint256 pointsFromRef, uint256 pointsFromAdapter, uint256 pointsTotal);
 }

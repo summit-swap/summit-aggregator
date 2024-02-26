@@ -17,14 +17,12 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
  * the accounts with the role of maintainer.
  */
 
-abstract contract Maintainable is Context, AccessControl {
+abstract contract Maintainable is AccessControl {
     bytes32 public constant MAINTAINER_ROLE = keccak256("MAINTAINER_ROLE");
 
     constructor() {
-        address msgSender = _msgSender();
-        // members of the DEFAULT_ADMIN_ROLE alone may revoke and grant role membership
-        _setupRole(DEFAULT_ADMIN_ROLE, msgSender);
-        _setupRole(MAINTAINER_ROLE, msgSender);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(MAINTAINER_ROLE, msg.sender);
     }
 
     function addMaintainer(address addedMaintainer) public virtual {
@@ -36,19 +34,16 @@ abstract contract Maintainable is Context, AccessControl {
     }
 
     function renounceRole(bytes32 role) public virtual {
-        address msgSender = _msgSender();
-        renounceRole(role, msgSender);
+        renounceRole(role, msg.sender);
     }
 
     function transferOwnership(address newOwner) public virtual {
-        address msgSender = _msgSender();
         grantRole(DEFAULT_ADMIN_ROLE, newOwner);
-        renounceRole(DEFAULT_ADMIN_ROLE, msgSender);
+        renounceRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     modifier onlyMaintainer() {
-        address msgSender = _msgSender();
-        require(hasRole(MAINTAINER_ROLE, msgSender), "Maintainable: Caller is not a maintainer");
+        require(hasRole(MAINTAINER_ROLE, msg.sender), "Maintainable: Caller is not a maintainer");
         _;
     }
 }

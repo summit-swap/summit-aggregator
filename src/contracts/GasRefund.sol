@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.4;
 
 import {IBlast} from "./interface/IBlast.sol";
 import {IGasRefund} from "./interface/IGasRefund.sol";
@@ -14,21 +14,21 @@ contract GasRefund is IGasRefund, Ownable {
 
     mapping(address => uint256) public nonces;
 
-    constructor(address _signer) Ownable(msg.sender) {
+    constructor(address _signer) Ownable() {
         signer = _signer;
     }
 
-    function changeSigner(address _signer) external onlyOwner {
+    function changeSigner(address _signer) override external onlyOwner {
         signer = _signer;
     }
 
-    function configureGovernor(address _governor) external onlyOwner {
+    function configureGovernor(address _governor) override external onlyOwner {
         blast.configureGovernor(_governor);
     }
 
     function claimAllGas(
         address[] calldata _contractAddresses
-    ) external onlyOwner {
+    ) override external onlyOwner {
         for (uint i = 0; i < _contractAddresses.length; i++) {
             blast.claimAllGas(_contractAddresses[i], address(this));
         }
@@ -37,7 +37,7 @@ contract GasRefund is IGasRefund, Ownable {
     function claimGasAtMinClaimRate(
         address[] calldata _contractAddresses,
         uint256[] calldata _minClaimRateBips
-    ) external onlyOwner {
+    ) override external onlyOwner {
         require(
             _contractAddresses.length == _minClaimRateBips.length,
             "GasRefund: should have the same length"
@@ -49,7 +49,7 @@ contract GasRefund is IGasRefund, Ownable {
 
     function claimMaxGas(
         address[] calldata _contractAddresses
-    ) external onlyOwner {
+    ) override external onlyOwner {
         for (uint i = 0; i < _contractAddresses.length; i++) {
             blast.claimMaxGas(_contractAddresses[i], address(this));
         }
@@ -59,7 +59,7 @@ contract GasRefund is IGasRefund, Ownable {
         address[] calldata _contractAddresses,
         uint256[] calldata _gasToClaim,
         uint256[] calldata _gasSecondsToConsume
-    ) external onlyOwner {
+    ) override external onlyOwner {
         for (uint i = 0; i < _contractAddresses.length; i++) {
             blast.claimGas(
                 _contractAddresses[i],
@@ -89,7 +89,7 @@ contract GasRefund is IGasRefund, Ownable {
     function withdrawGas(
         Withdrawal calldata _withdrawal,
         bytes memory _sig
-    ) external payable {
+    ) override external payable {
         require(
             _verify(
                 keccak256(

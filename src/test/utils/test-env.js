@@ -7,19 +7,27 @@ module.exports.constants = require("../../misc/constants.json");
 module.exports.helpers = require("../helpers");
 
 module.exports.setTestEnv = async (networkName, forkBlockNum) => {
-  await forkGlobalNetwork(forkBlockNum, networkName);
+  // await forkGlobalNetwork(forkBlockNum, networkName);
   const supportedTkns = await getTknContractsForNetwork(networkName);
   const accountsGen = await getAccountsGen();
   const deployer = accountsGen.next();
-  const testEnv = new TestEnv({ supportedTkns, deployer, accountsGen });
+  const user1 = accountsGen.next();
+  const user2 = accountsGen.next();
+  const user3 = accountsGen.next();
+  const user4 = accountsGen.next();
+  const testEnv = new TestEnv({ supportedTkns, deployer, user1, user2, user3, user4, accountsGen });
   return testEnv;
 };
 
 class TestEnv {
-  constructor({ supportedTkns, deployer, accountsGen }) {
+  constructor({ supportedTkns, deployer, user1, user2, user3, user4, accountsGen }) {
     this.supportedTkns = supportedTkns;
     this.accountsGen = accountsGen;
     this.deployer = deployer;
+    this.user1 = user1;
+    this.user2 = user2;
+    this.user3 = user3;
+    this.user4 = user4;
     this.setTrader(accountsGen.next());
   }
 

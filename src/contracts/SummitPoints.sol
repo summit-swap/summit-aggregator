@@ -16,17 +16,25 @@ import "./lib/SummitViewUtils.sol";
 import "./lib/Recoverable.sol";
 
 
-contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
+contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
 
-  address public POINTS_ADAPTER;
+  address public VOLUME_ADAPTER;
   address public REFERRALS;
-  mapping(address => uint256) public SELF_POINTS;
-  mapping(address => uint256) public REF_POINTS;
+  mapping(address => uint256) public SELF_VOLUME;
+  mapping(address => uint256) public REF_VOLUME;
+  mapping(address => uint256) public ADAPTER_VOLUME;
   mapping(address => address) public DELEGATE;
+
+  uint256 public GLOBAL_BOOST = 0;
+  uint256 public REF_VOLUME_SCALER = 500;
+  uint256 public ADAPTER_VOLUME_SCALER = 500;
 
   error AlreadyInitialized();
   error ZeroAddress();
   error NotPermitted();
+  error InvalidSelfAmount();
+  error InvalidRefAmount();
+  error InvalidAdapterAmount();
 
   bool public initialized = false;
   address public governor;
@@ -34,16 +42,19 @@ contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
     if (initialized) revert AlreadyInitialized();
     initialized = true;
 
-    IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+    // __BLAST__
+    // IBlast blast = IBlast(0x4300000000000000000000000000000000000002);
+    // __BLAST__
+    // blast.configureClaimableGas();
+    // __BLAST__
+    // blast.configureGovernor(_governor);
 
-    blast.configureClaimableGas();
-    blast.configureGovernor(_governor);
     governor = _governor;
   }
 
-  function setPointsAdapter(address _pointsAdapter) override public onlyMaintainer {
-    emit UpdatedPointsAdapter(_pointsAdapter);
-    POINTS_ADAPTER = _pointsAdapter;
+  function setVolumeAdapter(address _volumeAdapter) override public onlyMaintainer {
+    emit UpdatedVolumeAdapter(_volumeAdapter);
+    VOLUME_ADAPTER = _volumeAdapter;
   }
 
   function setReferralsContract(address _referrals) override public onlyMaintainer {
@@ -51,67 +62,87 @@ contract SummitPointsData is Maintainable, Recoverable, ISummitPoints {
     REFERRALS = _referrals;
   }
 
-  function getPoints(address _add) override public view returns (uint256 selfPoints, uint256 refPoints) {
-    return (
-      SELF_POINTS[_add],
-      REF_POINTS[_add]
-    );
+  function setVolumeScalers(uint256 _refVolumeScaler, uint256 _adapterVolumeScaler) override public onlyMaintainer {
+    REF_VOLUME_SCALER = _refVolumeScaler;
+    ADAPTER_VOLUME_SCALER = _adapterVolumeScaler;
+    emit UpdatedVolumeScalers(_refVolumeScaler, _adapterVolumeScaler);
   }
 
-  function getPointsAndReferralData(address _add) override public view returns (uint256 selfPoints, uint256 refPoints, uint256 refCount, uint8 level) {
-    if (REFERRALS == address(0)) {
-      return (
-        SELF_POINTS[_add],
-        REF_POINTS[_add],
-        0,
-        0
-      );
-    }
-    return (
-      SELF_POINTS[_add],
-      REF_POINTS[_add],
-      ISummitReferrals(REFERRALS).getRefsCount(_add),
-      ISummitReferrals(REFERRALS).getReferrerLevel(_add)
-    );
+  function setAdapterDelegate(address _adapter, address _delegate) override public onlyMaintainer {
+    DELEGATE[_adapter] = _delegate;
+    emit UpdatedAdapterDelegate(_adapter, _delegate);
   }
 
-  function addPoints(address _add, uint256 _amount) override public {
-    if (msg.sender != POINTS_ADAPTER) revert NotPermitted();
-    emit AddedPoints(_add, _amount);
-
-    if (REFERRALS == address(0)) {
-      SELF_POINTS[_add] += _amount;
-      return;
-    }
-
-    SELF_POINTS[_add] += ISummitReferrals(REFERRALS).getAmountWithReferredBonus(_add, _amount);
-
-    (address referrer, uint256 refPoints) = ISummitReferrals(REFERRALS).getReferrerAndPoints(_add, _amount);
-    if (refPoints > 0) {
-      REF_POINTS[referrer] += refPoints;
-    }
-  }
-
-  function transferPoints(address _from, address _to) override public {
-    if (_to == address(0)) revert ZeroAddress();
-    if (_from != msg.sender && DELEGATE[_from] != msg.sender) revert NotPermitted();
-    uint256 amount = SELF_POINTS[_from];
-    SELF_POINTS[_from] = 0;
-    SELF_POINTS[_to] = amount;
-    emit TransferredPoints(msg.sender, _from, _to, amount);
+  function setGlobalBoost(uint256 _boost) override public onlyMaintainer {
+    GLOBAL_BOOST = _boost;
+    emit UpdatedGlobalBoost(_boost);
   }
 
   function setDelegate(address _user, address _delegate) override public {
-    if (_delegate == address(0)) revert ZeroAddress();
     if (_user != msg.sender && DELEGATE[_user] != msg.sender) revert NotPermitted();
     DELEGATE[msg.sender] = _delegate;
     emit UpdatedDelegate(msg.sender, _user, _delegate);
   }
 
-  function setAdapterDelegate(address _adapter, address _delegate) override public onlyMaintainer {
-    if (_delegate == address(0)) revert ZeroAddress();
-    DELEGATE[_adapter] = _delegate;
-    emit UpdatedAdapterDelegate(_adapter, _delegate);
+  function addVolume(address _add, uint256 _volume) override public {
+    if (msg.sender != VOLUME_ADAPTER) revert NotPermitted();
+
+    if (GLOBAL_BOOST > 0) {
+      _volume = (_volume * (10000 + GLOBAL_BOOST)) / 10000;
+    }
+
+    SELF_VOLUME[_add] += _volume;
+    emit AddedUserVolume(_add, _volume);
+
+    address referrer = ISummitReferrals(REFERRALS).getReferrer(_add);
+    if (referrer != address(0)) {
+      REF_VOLUME[referrer] += _volume;
+      emit AddedReferrerVolume(referrer, _add, _volume);
+    }
   }
 
+  function addAdapterVolume(address _adapter, uint256 _volume) override public {
+    if (msg.sender != VOLUME_ADAPTER) revert NotPermitted();
+
+    if (GLOBAL_BOOST > 0) {
+      _volume = (_volume * (10000 + GLOBAL_BOOST)) / 10000;
+    }
+
+    ADAPTER_VOLUME[_adapter] += _volume;
+    emit AddedAdapterVolume(_adapter, _volume);
+  }
+
+  function transferVolume(address _from, address _to, uint256 _selfAmount, uint256 _refAmount, uint256 _adapterAmount) override public {
+    if (_to == address(0)) revert ZeroAddress();
+    if (_from != msg.sender && DELEGATE[_from] != msg.sender) revert NotPermitted();
+    if (_selfAmount > SELF_VOLUME[_from]) revert InvalidSelfAmount();
+    if (_refAmount > REF_VOLUME[_from]) revert InvalidRefAmount();
+    if (_adapterAmount > ADAPTER_VOLUME[_from]) revert InvalidAdapterAmount();
+    
+    SELF_VOLUME[_from] -= _selfAmount;
+    SELF_VOLUME[_to] += _selfAmount;
+    
+    REF_VOLUME[_from] -= _refAmount;
+    REF_VOLUME[_to] += _refAmount;
+
+    ADAPTER_VOLUME[_from] -= _adapterAmount;
+    ADAPTER_VOLUME[_to] += _adapterAmount;
+
+    emit TransferredVolume(msg.sender, _from, _to, _selfAmount, _refAmount, _adapterAmount);
+  }
+
+  function getVolume(address _add) override public view returns (uint256 selfVolume, uint256 refVolume, uint256 adapterVolume) {
+    return (
+      SELF_VOLUME[_add],
+      REF_VOLUME[_add],
+      ADAPTER_VOLUME[_add]
+    );
+  }
+
+  function getPoints(address _add) override public view returns (uint256 pointsFromSelf, uint256 pointsFromRef, uint256 pointsFromAdapter, uint256 pointsTotal) {
+    pointsFromSelf = SELF_VOLUME[_add] * (10000 + (REFERRALS == address(0) ? 10000 : ISummitReferrals(REFERRALS).getSelfVolumeMultiplier(_add))) / 10000;
+    pointsFromRef = (REF_VOLUME[_add] * REF_VOLUME_SCALER * (10000 + (REFERRALS == address(0) ? 10000 : ISummitReferrals(REFERRALS).getRefVolumeMultiplier(_add)))) / (10000 * 10000);
+    pointsFromAdapter = (ADAPTER_VOLUME[_add] * ADAPTER_VOLUME_SCALER) / 10000;
+    pointsTotal = pointsFromSelf + pointsFromRef + pointsFromAdapter;
+  }
 }
