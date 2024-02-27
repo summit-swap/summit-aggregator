@@ -83,23 +83,23 @@ const SummitOracleModule = buildModule("SummitOracle", (m) => {
 module.exports = buildModule("SummitSwapEcosystem", (m) => {
   const deployer = m.getAccount(0);
 
-  const spookySwapAdapter = m.contract(
-    "UniswapV2Adapter",
-    [spookySwapData.name, spookySwapData.factory, spookySwapData.fee, spookySwapData.gasEstimate],
-    { id: spookySwapData.name }
-  );
-
   const spiritSwapAdapter = m.contract(
     "UniswapV2Adapter",
     [spiritSwapData.name, spiritSwapData.factory, spiritSwapData.fee, spiritSwapData.gasEstimate],
-    { id: spiritSwapData.name, after: [spookySwapAdapter] }
+    { id: spiritSwapData.name }
+  );
+
+  const spookySwapAdapter = m.contract(
+    "UniswapV2Adapter",
+    [spookySwapData.name, spookySwapData.factory, spookySwapData.fee, spookySwapData.gasEstimate],
+    { id: spookySwapData.name, after: [spiritSwapAdapter] }
   );
 
   const summitRouter = m.contract(
     "SummitRouter",
     [[spookySwapAdapter, spiritSwapAdapter], deployOptions.hopTokens, deployer, deployOptions.wnative],
     {
-      after: [spiritSwapAdapter],
+      after: [spookySwapAdapter],
     }
   );
 

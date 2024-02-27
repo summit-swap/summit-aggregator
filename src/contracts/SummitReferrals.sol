@@ -57,7 +57,7 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
       uint256[6] memory refVolumeReq = [uint256(0), 0, 10000e18, 25000e18, 100000e18, 1000000e18];
       uint256[6] memory selfVolumeReq = [uint256(0), 100e18, 1000e18, 2000e18, 5000e18, 25000e18];
       uint256[6] memory refsReq = [uint256(0), 0, 3, 5, 10, 25];
-      uint256[6] memory multReward = [uint256(0), 200, 500, 500, 700, 1000];
+      uint256[6] memory multReward = [uint256(0), 200, 400, 500, 700, 1500];
 
       for (uint256 i = 0; i < levelCount; i++) {
         LEVEL_REF_VOLUME_REQ[i] = refVolumeReq[i];
@@ -132,6 +132,16 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     function boostReferrer(address _referrer, uint8 _boostLevel) override public onlyMaintainer {
       REF_BOOST_LEVEL[_referrer] = _boostLevel;
       emit BoostedReferrer(_referrer, _boostLevel);
+    }
+
+    function boostReferrers(address[] memory _referrers, uint8[] memory _levels) override public onlyMaintainer {
+      if (_referrers.length != _levels.length) revert LengthMismatch();
+      for (uint256 i = 0; i < _referrers.length; i++) {
+        if (REF_BOOST_LEVEL[_referrers[i]] != _levels[i]) {
+          REF_BOOST_LEVEL[_referrers[i]] = _levels[i];
+        }
+      }
+      emit BoostedReferrers(_referrers, _levels);
     }
 
     function setLevelData(uint256[] memory _refVolumeReq, uint256[] memory _selfVolumeReq, uint256[] memory _refsReq, uint256[] memory _multReward, uint256 _hasReferrerBonusMult) override public onlyMaintainer {
