@@ -7,6 +7,7 @@ require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-gas-reporter");
 
 // Tasks
+require("./tasks/update-referrer-level-boosts");
 require("./src/tasks/update-hop-tokens");
 require("./src/tasks/update-adapters");
 require("./src/tasks/find-best-path");
