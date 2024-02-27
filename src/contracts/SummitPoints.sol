@@ -27,9 +27,9 @@ contract SummitPoints is Maintainable, Recoverable, ISummitPoints {
   mapping(address => bool) public BLACKLISTED;
 
   uint256 public GLOBAL_BOOST = 0;
-  uint256 public BASE_VOLUME_SCALER = 1000; // 10%
+  uint256 public BASE_VOLUME_SCALER = 100; // 1% (1 point per $100 in volume initially)
   uint256 public REF_VOLUME_SCALER = 500; // 5% - 15% based on bonus multiplier from referrals
-  uint256 public ADAPTER_VOLUME_SCALER = 100; // 1%
+  uint256 public ADAPTER_VOLUME_SCALER = 200; // 2%
 
   error AlreadyInitialized();
   error ZeroAddress();
