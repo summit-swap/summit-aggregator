@@ -156,10 +156,11 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
       return REFERRER[_add];
     }
 
-    function getReferrerLevel(address _add) override public view returns (uint8) {
-      if (REF_BOOST_LEVEL[_add] > 0) {
-        return REF_BOOST_LEVEL[_add] > (levelCount - 1) ? uint8(levelCount - 1) : REF_BOOST_LEVEL[_add];
-      }
+    function getReferrerCode(address _add) override public view returns (string memory) {
+      return REF_CODE_INV[REFERRER[_add]];
+    }
+
+    function getReferrerLevelWithoutBoost(address _add) override public view returns (uint8) {
       if (SUMMIT_POINTS == address(0)) return 0;
 
       (uint256 _selfVolume, uint256 _refVolume,) = ISummitPoints(SUMMIT_POINTS).getVolume(_add);
@@ -173,6 +174,13 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
       return uint8(levelCount);
     }
 
+    function getReferrerLevel(address _add) override public view returns (uint8) {
+      if (REF_BOOST_LEVEL[_add] > 0) {
+        return REF_BOOST_LEVEL[_add] > (levelCount - 1) ? uint8(levelCount - 1) : REF_BOOST_LEVEL[_add];
+      }
+      return getReferrerLevelWithoutBoost(_add);
+    }
+
     function getLevelRequirements(uint8 _level) override public view returns (uint256 selfVolume, uint256 refVolume, uint256 refsCount) {
       if (_level >= levelCount) revert InvalidLevel();
       return (
@@ -180,6 +188,12 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
         LEVEL_REF_VOLUME_REQ[_level],
         LEVEL_REFS_REQ[_level]
       );
+    }
+
+    function getUserNextLevelRequirements(address _add) override public view returns (uint256 selfVolume, uint256 refVolume, uint256 refsCount) {
+      uint8 nextLevel = getReferrerLevelWithoutBoost(_add) + 1;
+      uint8 level = nextLevel >= (levelCount - 1) ? uint8(levelCount - 1) : nextLevel;
+      return getLevelRequirements(level);
     }
 
     function getRefsCount(address _add) override public view returns (uint256) {

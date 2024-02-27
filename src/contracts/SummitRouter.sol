@@ -34,6 +34,7 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
     address public FEE_CLAIMER;
     address[] public TRUSTED_TOKENS;
     mapping(address => uint256) public TOKEN_VOLUME_MULTIPLIERS; // (token amount * tokenVolumeMultiplier[token]) / 1e12
+    mapping(address => uint256) public TOKEN_VOLUME_BONUS;
     address[] public ADAPTERS;
     address public VOLUME_ADAPTER;
 
@@ -84,6 +85,14 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         emit UpdatedTokenVolumeMultipliers(_tokens, _volumeMultipliers);
         for (uint256 i = 0; i < _tokens.length; i++) {
             TOKEN_VOLUME_MULTIPLIERS[_tokens[i]] = _volumeMultipliers[i];
+        }
+    }
+
+    function setTokenBonusMultipliers(address[] memory _tokens, uint256[] memory _multipliers) public onlyMaintainer {
+        require(_tokens.length == _multipliers.length, "SummitRouter: Array length mismatch");
+        emit UpdatedTokenBonusMultipliers(_tokens, _multipliers);
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            TOKEN_VOLUME_BONUS[_tokens[i]] = _multipliers[i];
         }
     }
 
@@ -340,6 +349,12 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
     }
 
     // -- VOLUME --
+
+    function getTokenBonus(address _token) override public view returns (uint256) {
+        if (_token == address(0)) return 0;
+        return TOKEN_VOLUME_BONUS[_token];
+    }
+
     function _applyUserVolume(
         address _from,
         address[] memory _path, 
@@ -348,14 +363,18 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         if (VOLUME_ADAPTER == address(0)) return 0;
 
         uint256 volume = 0;
+        uint256 bonus = 0;
         for (uint256 i = 0; i < _path.length; i++) {
+            if (bonus == 0 && TOKEN_VOLUME_BONUS[_path[i]] != 0) {
+                bonus = TOKEN_VOLUME_BONUS[_path[i]];
+            }
             if (volume == 0 && TOKEN_VOLUME_MULTIPLIERS[_path[i]] != 0) {
                 volume = TOKEN_VOLUME_MULTIPLIERS[_path[i]] * _amounts[i] / 1e12;
             }
         }
 
         if (volume > 0 && VOLUME_ADAPTER != address(0)) {
-            ISummitVolumeAdapter(VOLUME_ADAPTER).addVolume(_from, volume);
+            ISummitVolumeAdapter(VOLUME_ADAPTER).addVolume(_from, (volume * (10000 + bonus)) / 10000);
         }
 
         return volume;

@@ -37,6 +37,7 @@ interface ISummitRouter {
 
     event UpdatedTrustedTokens(address[] _newTrustedTokens);
     event UpdatedTokenVolumeMultipliers(address[] _tokens, uint256[] _pointMultipliers);
+    event UpdatedTokenBonusMultipliers(address [] _tokens, uint256[] _multipliers);
     event UpdatedAdapters(address[] _newAdapters);
     event UpdatedVolumeAdapter(address _volumeAdapter);
     event UpdatedMinFee(uint256 _oldMinFee, uint256 _newMinFee);
@@ -53,6 +54,7 @@ interface ISummitRouter {
     // misc
     function trustedTokensCount() external view returns (uint256);
     function adaptersCount() external view returns (uint256);
+    function getTokenBonus(address _token) external view returns (uint256);
 
     // query
 

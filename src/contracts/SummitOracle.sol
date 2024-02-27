@@ -76,6 +76,12 @@ contract SummitOracle is Maintainable, Recoverable {
       return IERC20(_token).balanceOf(_user);
     }
 
+    function _getBonus(address _token) internal view returns (uint256) {
+      if (_token == address(0)) return 0;
+      return ROUTER.getTokenBonus(_token);
+    }
+
+
     function getPrice10Stable(address _token) public view returns (uint256) {
       try ROUTER.findBestPath(
         10 ** STABLE.decimals(),
@@ -93,6 +99,7 @@ contract SummitOracle is Maintainable, Recoverable {
       address tokenAddress;
       string symbol;
       uint256 decimals;
+      uint256 bonus;
       uint256 userAllowance;
       uint256 userBalance;
       uint256 price;
@@ -104,6 +111,7 @@ contract SummitOracle is Maintainable, Recoverable {
         tokenAddress: _token,
         symbol: _getSymbol(_token),
         decimals: _getDecimals(_token),
+        bonus: _getBonus(_token),
         price: price,
         userAllowance: _getAllowance(_user, _token),
         userBalance: _getBalance(_user, _token)

@@ -20,9 +20,12 @@ interface ISummitReferrals {
   function boostReferrer(address _referrer, uint8 _boostLevel) external;
   function setLevelData(uint256[] memory _refPointsReq, uint256[] memory _selfPointsReq, uint256[] memory _refsReq, uint256[] memory _multRew, uint256 _hasReferrerBonusMult) external;
   function getReferrer(address _add) external view returns (address);
+  function getReferrerCode(address _add) external view returns (string memory);
   function getRefsCount(address _add) external view returns (uint256);
+  function getReferrerLevelWithoutBoost(address _add) external view returns (uint8);
   function getReferrerLevel(address _add) external view returns (uint8);
   function getLevelRequirements(uint8 _level) external view returns (uint256 selfVolume, uint256 refVolume, uint256 refsCount);
+  function getUserNextLevelRequirements(address _add) external view returns (uint256 selfVolume, uint256 refVolume, uint256 refsCount);
   function getRefVolumeBonusMultiplier(address _add) external view returns (uint256);
   function getSelfVolumeMultiplier(address _add) external view returns (uint256);
 }
