@@ -189,21 +189,40 @@ describe("SummitReferrals", function () {
   it("Referral Code", async () => {
     const { referrals, deployer, user1, user2, user3, user4 } = await loadFixture(deployFixture);
 
+    // . Revert if too short
+    await expect(referrals.connect(deployer).setReferralCode("XX")).to.be.revertedWithCustomError(
+      referrals,
+      "InvalidCode"
+    );
+
+    // . Revert if too long
+    await expect(referrals.connect(deployer).setReferralCode("XXXXXXXXXXXXXXXX")).to.be.revertedWithCustomError(
+      referrals,
+      "InvalidCode"
+    );
+
     // . Revert if not bronze
     await expect(referrals.connect(deployer).setReferralCode("XXXX")).to.be.revertedWithCustomError(
       referrals,
       "MustBeAtLeastBronze"
     );
     await referrals.boostReferrer(deployer.address, 4);
+
+    // . Succeed
     await expect(referrals.connect(deployer).setReferralCode("XXXX")).to.not.be.reverted;
 
-    // . Revert if code not available
+    // . Revert if user already set code
+    await expect(referrals.connect(deployer).setReferralCode("YYYY")).to.be.revertedWithCustomError(
+      referrals,
+      "AlreadySetCode"
+    );
+
+    // . Revert for other user if code not available
     await referrals.boostReferrer(user1.address, 4);
     await expect(referrals.connect(user1).setReferralCode("XXXX")).to.be.revertedWithCustomError(
       referrals,
       "CodeNotAvailable"
     );
-    await expect(referrals.connect(user1).setReferralCode("XXXXX")).to.not.be.reverted;
 
     // . Ref code should be set
     // . Ref code inv should be set
@@ -218,7 +237,7 @@ describe("SummitReferrals", function () {
     const deployerCodeInit = await referrals.REF_CODE_INV(deployer.address);
     expect(deployerCodeInit).to.eq("XXXX");
 
-    await referrals.connect(deployer).setReferralCode("YYYY");
+    await referrals.connect(deployer).maintainerSetReferralCode(deployer.address, "YYYY");
 
     const xxxxReferrerFinal = await referrals.REF_CODE("XXXX");
     expect(xxxxReferrerFinal).to.eq(zeroAdd);

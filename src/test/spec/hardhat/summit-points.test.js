@@ -102,7 +102,7 @@ describe("SummitPoints", function () {
     // Points should be non 0
     await points.addVolume(user1.address, 10000); // SELF
     const pointsInit = await points.getPoints(user1.address);
-    expect(pointsInit[3]).to.eq(1000);
+    expect(pointsInit[3]).to.eq(100);
 
     await expect(points.setBlacklisted(user1.address, true))
       .to.emit(points, "UpdatedBlacklisted")

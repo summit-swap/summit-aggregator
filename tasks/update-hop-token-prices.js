@@ -5,6 +5,10 @@ const { zeroAddress } = require("ethereumjs-util");
 
 const zeroAdd = "0x0000000000000000000000000000000000000000";
 
+const eN = (n, e) => {
+  return ethers.parseUnits(`${n}`, e);
+};
+
 task("update-hop-token-prices", "Updates SummitRouter hop token prices using SummitOracle", async (_, hre) => {
   const networkId = hre.network.config.chainId;
   const [deployer] = await hre.ethers.getSigners();
@@ -26,15 +30,19 @@ task("update-hop-token-prices", "Updates SummitRouter hop token prices using Sum
     fetchedMults,
   });
 
+  const multifier = (price, decOffset = 18) => {
+    return eN(price, 12 + decOffset);
+  };
+
   const mults = [
-    3267.23, // WETH_LZ
-    0.4458, // WFTM
-    1, // USDC_AXL
-    1, // USDT_AXL
-    1, // DAI_AXL
-    1, // USDC_LZ
-    1, // USDT_LZ
-  ].map((mult) => mult * 1000000000000);
+    multifier(3267.23), // WETH_LZ
+    multifier(0.4458), // WFTM
+    multifier(1, 12), // USDC_AXL
+    multifier(1, 12), // USDT_AXL
+    multifier(1, 12), // DAI_AXL
+    multifier(1, 12), // USDC_LZ
+    multifier(1, 12), // USDT_LZ
+  ];
 
   // await SummitRouter.connect(deployer).setTokenVolumeMultipliers(tokens, mults).then(finale);
 

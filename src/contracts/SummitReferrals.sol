@@ -44,6 +44,7 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     mapping(address => string) public REF_CODE_INV;
 
     error InvalidCode();
+    error AlreadySetCode();
     error AlreadyInitialized();
     error MissingReferral();
     error AlreadyReferredByUser();
@@ -119,7 +120,10 @@ contract SummitReferrals is Maintainable, ISummitReferrals {
     }
 
     function setReferralCode(string memory _code) override public {
-      if(bytes(_code).length == 0) revert InvalidCode();
+      if(bytes(_code).length < 3 || bytes(_code).length > 15) revert InvalidCode();
+
+      // Validate user doesnt already have code
+      if (bytes(REF_CODE_INV[msg.sender]).length != 0) revert AlreadySetCode();
 
       // Validate referrer is at least bronze level
       if (getReferrerLevel(msg.sender) == 0) revert MustBeAtLeastBronze();

@@ -1,9 +1,0 @@
-{
-  "SummitSwapEcosystem#SpiritSwapAdapter": "0x1952c15Fadf7C87B34FE1e9c70cAb2e9A1860062",
-  "SummitSwapEcosystem#SpookySwapAdapter": "0xD5Fa08aF9499873da71CceC7AafDA5C7AA71f674",
-  "SummitSwapEcosystem#SummitRouter": "0xCb24130b0c98985BcCAfC4e9F6184e3f1f77Bb0e",
-  "SummitSwapEcosystem#SummitPoints": "0xB633Ed13B2C01f76c00B1FDE60bC01d3b37dC62E",
-  "SummitSwapEcosystem#SummitReferrals": "0x395a28E0b15530441502a38828360e2F48b1ff03",
-  "SummitSwapEcosystem#SummitVolumeAdapterV1": "0xF8C58202bbB28d29acB677F4D26Eb223911A7852",
-  "SummitSwapEcosystem#SummitOracle": "0x8278e02Aa0c001DeA196dBfc9F305530aA0D4089"
-}

@@ -19,8 +19,6 @@ import "./lib/SummitViewUtils.sol";
 import "./lib/Recoverable.sol";
 import "./interface/ISummitVolumeAdapter.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "hardhat/console.sol";
-
 
 contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
     using SafeERC20 for IERC20;
@@ -401,17 +399,13 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         if (_fee > 0 || MIN_FEE > 0) {
             // Transfer fees to the claimer account and decrease initial amount
             amounts[0] = _applyFee(_trade.amountIn, _fee);
-            console.log("transfer fee from user to claimer", _trade.path[0],  _trade.amountIn - amounts[0]);
             _transferFrom(_trade.path[0], _from, address(this), _trade.amountIn - amounts[0]);
             _transferFrom(_trade.path[0], address(this), FEE_CLAIMER, _trade.amountIn - amounts[0]);
-            console.log("transferred fee successfully");
         } else {
             amounts[0] = _trade.amountIn;
         }
-        console.log("transfer from user to adapter", _trade.path[0], amounts[0]);
         _transferFrom(_trade.path[0], _from, _trade.adapters[0], amounts[0]);
 
-        console.log("transferred from user successfully");
         // Get amounts that will be swapped
         for (uint256 i = 0; i < _trade.adapters.length; i++) {
             amounts[i + 1] = IAdapter(_trade.adapters[i]).query(amounts[i], _trade.path[i], _trade.path[i + 1]);
