@@ -1,4 +1,5 @@
 require("dotenv").config();
+require("@nomicfoundation/hardhat-ignition");
 require("@nomicfoundation/hardhat-ignition-ethers");
 require("@nomicfoundation/hardhat-ethers");
 require("@nomicfoundation/hardhat-chai-matchers");
@@ -8,6 +9,7 @@ require("hardhat-gas-reporter");
 
 // Tasks
 require("./tasks/update-referrer-level-boosts");
+require("./tasks/update-hop-token-prices");
 require("./src/tasks/update-hop-tokens");
 require("./src/tasks/update-adapters");
 require("./src/tasks/find-best-path");
@@ -66,6 +68,12 @@ module.exports = {
     apiKey: FANTOM_API_KEY,
   },
   defaultNetwork: "hardhat",
+  ignition: {
+    blockPollingInterval: 1000,
+    timeBeforeBumpingFees: 3 * 60 * 1000,
+    maxFeeBumps: 4,
+    requiredConfirmations: 5,
+  },
   networks: {
     hardhat: {
       chainId: 250,

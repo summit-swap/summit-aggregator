@@ -5,7 +5,7 @@ const getReferrerLevelBoosts = async (networkId) => {
 };
 
 module.exports.updateReferrerLevelBoosts = async (SummitReferrals, deployer, networkId) => {
-  const boosts = getReferrerLevelBoosts(networkId);
+  const boosts = await getReferrerLevelBoosts(networkId);
 
   const boostAddresses = [];
   const boostValues = [];

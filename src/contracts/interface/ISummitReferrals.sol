@@ -14,10 +14,12 @@ interface ISummitReferrals {
   event BoostedReferrers(address[] referrer, uint8[] _boostLevel);
   event UpdatedReferrer(address indexed _add, address indexed _referrer);
   event UpdatedLevelData(uint256[] _refPointsReq, uint256[] _selfPointsReq, uint256[] _refsReq, uint256[] _multRew, uint256 _hasReferrerBonusMult);
+  event UpdatedReferralCode(address indexed _caller, address indexed _user, string _code);
 
   function setPointsContract(address _pointsContract) external;
   function setReferrer(address _referrer, string memory _code) external;
   function setReferralCode(string memory _code) external;
+  function maintainerSetReferralCode(address _add, string memory _code) external;
   function boostReferrer(address _referrer, uint8 _boostLevel) external;
   function boostReferrers(address[] memory _referrers, uint8[] memory _boostLevels) external;
   function setLevelData(uint256[] memory _refPointsReq, uint256[] memory _selfPointsReq, uint256[] memory _refsReq, uint256[] memory _multRew, uint256 _hasReferrerBonusMult) external;

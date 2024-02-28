@@ -11,6 +11,7 @@ import "./interface/IERC20.sol";
 import "./interface/IBlast.sol";
 import "./lib/SafeERC20.sol";
 import "./lib/Maintainable.sol";
+import "hardhat/console.sol";
 
 abstract contract SummitAdapter is Maintainable {
     using SafeERC20 for IERC20;
@@ -26,6 +27,9 @@ abstract contract SummitAdapter is Maintainable {
     error AlreadyInitialized();
 
     constructor(string memory _name, uint256 _gasEstimate) {
+        console.log("Adapter Name", _name);
+        console.logBytes(bytes(_name));
+        console.log("length", bytes(_name).length);
         setName(_name);
         setSwapGasEstimate(_gasEstimate);
     }
@@ -46,13 +50,14 @@ abstract contract SummitAdapter is Maintainable {
         governor = _governor;
     }
 
+    // TODO: UNFUCK THIS
     function setName(string memory _name) internal {
-        require(bytes(_name).length != 0, "Invalid adapter name");
+        // require(bytes(_name).length != 0, "Invalid adapter name");
         name = _name;
     }
 
     function setSwapGasEstimate(uint256 _estimate) public onlyMaintainer {
-        require(_estimate != 0, "Invalid gas-estimate");
+        // require(_estimate != 0, "Invalid gas-estimate");
         swapGasEstimate = _estimate;
         emit UpdatedGasEstimate(address(this), _estimate);
     }

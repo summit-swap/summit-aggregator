@@ -1,5 +1,4 @@
 const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
-
 const { addresses } = require("../../src/deploy/utils");
 const networkName = "fantom";
 const deployOptions = require("../../src/misc/deployOptions")[networkName];
@@ -17,68 +16,6 @@ const spiritSwapData = {
   fee: 3,
   gasEstimate: 120000,
 };
-
-const SpookySwapAdapterModule = buildModule("SpookySwapAdapter", (m) => {
-  const spookySwapAdapter = m.contract(
-    "UniswapV2Adapter",
-    [spookySwapData.name, spookySwapData.factory, spookySwapData.fee, spookySwapData.gasEstimate],
-    { id: spookySwapData.name }
-  );
-
-  return { spookySwapAdapter };
-});
-
-const SpiritSwapAdapterModule = buildModule("SpiritSwapAdapter", (m) => {
-  const spiritSwapAdapter = m.contract(
-    "UniswapV2Adapter",
-    [spiritSwapData.name, spiritSwapData.factory, spiritSwapData.fee, spiritSwapData.gasEstimate],
-    { id: spiritSwapData.name }
-  );
-
-  return { spiritSwapAdapter };
-});
-
-const SummitRouterModule = buildModule("SummitRouter", (m) => {
-  const deployer = m.getAccount(0);
-  const { spookySwapAdapter } = m.useModule(SpookySwapAdapterModule);
-  const { spiritSwapAdapter } = m.useModule(SpiritSwapAdapterModule);
-
-  const summitRouter = m.contract("SummitRouter", [
-    [spookySwapAdapter, spiritSwapAdapter],
-    deployOptions.hopTokens,
-    deployer,
-    deployOptions.wnative,
-  ]);
-
-  return { summitRouter };
-});
-
-const SummitPointsModule = buildModule("SummitPoints", (m) => {
-  const deployer = m.getAccount(0);
-  const summitPoints = m.contract("SummitPoints", []);
-  m.call(summitPoints, "initialize", [deployer]);
-  return { summitPoints };
-});
-
-const SummitReferralsModule = buildModule("SummitReferrals", (m) => {
-  const deployer = m.getAccount(0);
-  const summitReferrals = m.contract("SummitReferrals", []);
-  m.call(summitReferrals, "initialize", [deployer]);
-  return { summitReferrals };
-});
-
-const SummitVolumeAdapterModule = buildModule("SummitVolumeAdapter", (m) => {
-  const deployer = m.getAccount(0);
-  const summitVolumeAdapter = m.contract("SummitVolumeAdapterV1", []);
-  m.call(summitVolumeAdapter, "initialize", [deployer]);
-  return { summitVolumeAdapter };
-});
-
-const SummitOracleModule = buildModule("SummitOracle", (m) => {
-  const { summitRouter } = m.useModule(SummitRouterModule);
-  const summitOracle = m.contract("SummitOracle", [summitRouter, deployOptions.oracle.stable, deployOptions.wnative]);
-  return { summitOracle };
-});
 
 module.exports = buildModule("SummitSwapEcosystem", (m) => {
   const deployer = m.getAccount(0);
@@ -99,7 +36,7 @@ module.exports = buildModule("SummitSwapEcosystem", (m) => {
     "SummitRouter",
     [[spookySwapAdapter, spiritSwapAdapter], deployOptions.hopTokens, deployer, deployOptions.wnative],
     {
-      after: [spookySwapAdapter],
+      after: [spookySwapAdapter, spiritSwapAdapter],
     }
   );
 
@@ -117,12 +54,6 @@ module.exports = buildModule("SummitSwapEcosystem", (m) => {
   const summitOracle = m.contract("SummitOracle", [summitRouter, deployOptions.oracle.stable, deployOptions.wnative], {
     after: [initSummitVolumeAdapterCall],
   });
-
-  // const { summitRouter } = m.useModule(SummitRouterModule);
-  // const { summitPoints } = m.useModule(SummitPointsModule);
-  // const { summitReferrals } = m.useModule(SummitReferralsModule);
-  // const { summitVolumeAdapter } = m.useModule(SummitVolumeAdapterModule);
-  // const { summitOracle } = m.useModule(SummitOracleModule);
 
   // Points Contract
   const setVolAdapterCall = m.call(summitPoints, "setVolumeAdapter", [summitVolumeAdapter], { after: [summitOracle] });
