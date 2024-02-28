@@ -412,7 +412,7 @@ contract SummitRouter is Maintainable, Recoverable, ISummitRouter {
         }
 
         // Add volume to user
-        uint256 volume = _applyUserVolume(_from, _trade.path, amounts);
+        uint256 volume = _applyUserVolume(msg.sender, _trade.path, amounts);
 
         require(amounts[amounts.length - 1] >= _trade.amountOut, "SummitRouter: Insufficient output amount");
         for (uint256 i = 0; i < _trade.adapters.length; i++) {

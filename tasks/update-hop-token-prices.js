@@ -27,10 +27,10 @@ task("update-hop-token-prices", "Updates SummitRouter hop token prices using Sum
 
   const fetchedMults = await Promise.all(tokens.map((token) => SummitRouter.TOKEN_VOLUME_MULTIPLIERS(token)));
   console.log({
-    fetchedMults,
+    existingMults: fetchedMults,
   });
 
-  const multifier = (price, decOffset = 18) => {
+  const multifier = (price, decOffset = 0) => {
     return eN(price, 12 + decOffset);
   };
 
@@ -44,7 +44,7 @@ task("update-hop-token-prices", "Updates SummitRouter hop token prices using Sum
     multifier(1, 12), // USDT_LZ
   ];
 
-  // await SummitRouter.connect(deployer).setTokenVolumeMultipliers(tokens, mults).then(finale);
+  await SummitRouter.connect(deployer).setTokenVolumeMultipliers(tokens, mults).then(finale);
 
   // const trustedTokensCount = parseInt(await SummitRouter.trustedTokensCount());
   // console.log({
