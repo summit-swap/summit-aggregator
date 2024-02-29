@@ -16,6 +16,7 @@ task("update-hop-token-prices", "Updates SummitRouter hop token prices using Sum
   const SummitOracle = await getDeployedContract(networkId, "SummitOracle");
 
   const tokens = [
+    "0x0000000000000000000000000000000000000000", // FTM
     "0x695921034f0387eAc4e11620EE91b1b15A6A09fE", // WETH_LZ
     "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // WFTM
     "0x1B6382DBDEa11d97f24495C9A90b7c88469134a4", // USDC_AXL
@@ -35,6 +36,7 @@ task("update-hop-token-prices", "Updates SummitRouter hop token prices using Sum
   };
 
   const mults = [
+    multifier(0.4458), // FTM
     multifier(3267.23), // WETH_LZ
     multifier(0.4458), // WFTM
     multifier(1, 12), // USDC_AXL

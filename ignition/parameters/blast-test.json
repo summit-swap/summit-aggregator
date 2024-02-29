@@ -1,0 +1,17 @@
+{
+  "SummitSwapEcosystem": {
+    "oracle": {
+      "stable": "0xda9C093a7D9e41d21Dc9A7ff5601A3FD02111d95",
+      "core": "0x4200000000000000000000000000000000000023"
+    },
+    "adapters": {},
+    "deploymentOptions": {
+      "claimableGasInitialization": true
+    },
+    "hopTokens": {
+      "WETH": "0x4200000000000000000000000000000000000023",
+      "tUSDC": "0xda9C093a7D9e41d21Dc9A7ff5601A3FD02111d95"
+    },
+    "wNative": "0x4200000000000000000000000000000000000023"
+  }
+}

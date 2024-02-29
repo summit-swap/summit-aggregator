@@ -1,57 +1,49 @@
 const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
-const { addresses } = require("../../src/deploy/utils");
-const networkName = "fantom";
-const deployOptions = require("../../src/misc/deployOptions")[networkName];
+const hopTokens = require("../../config/hopTokens");
+const oracleConfig = require("../../config/oracle");
 
-const spookySwapData = {
-  name: "SpookySwapAdapter",
-  factory: addresses.fantom.univ2.factories.spooky,
-  fee: 2,
-  gasEstimate: 120000,
-};
+const networkId = 168587773;
 
-const spiritSwapData = {
-  name: "SpiritSwapAdapter",
-  factory: addresses.fantom.univ2.factories.spirit,
-  fee: 3,
-  gasEstimate: 120000,
-};
+const hopTokensList = Object.values(hopTokens[networkId]);
+const gasRefundModule = buildModule("GasRefund", (m) => {
+  const deployer = m.getAccount(0);
+  const gasRefund = m.contract("GasRefund", [deployer]);
+
+  return { gasRefund };
+});
 
 module.exports = buildModule("SummitSwapEcosystem", (m) => {
   const deployer = m.getAccount(0);
 
-  const spiritSwapAdapter = m.contract(
-    "UniswapV2Adapter",
-    [spiritSwapData.name, spiritSwapData.factory, spiritSwapData.fee, spiritSwapData.gasEstimate],
-    { id: spiritSwapData.name }
-  );
+  const wNative = m.getParameter("wNative");
+  const oracleParams = oracleConfig[networkId];
+  console.log({
+    wNative,
+    hopTokensList,
+  });
 
-  const spookySwapAdapter = m.contract(
-    "UniswapV2Adapter",
-    [spookySwapData.name, spookySwapData.factory, spookySwapData.fee, spookySwapData.gasEstimate],
-    { id: spookySwapData.name, after: [spiritSwapAdapter] }
-  );
+  const { gasRefund } = m.useModule(gasRefundModule);
 
-  const summitRouter = m.contract(
-    "SummitRouter",
-    [[spookySwapAdapter, spiritSwapAdapter], deployOptions.hopTokens, deployer, deployOptions.wnative],
-    {
-      after: [spookySwapAdapter, spiritSwapAdapter],
-    }
-  );
+  const summitRouter = m.contract("SummitRouter", [[], hopTokensList, deployer, wNative], { after: [gasRefund] });
+  const initSummitRouterCall = m.call(summitRouter, "initialize", [gasRefund]);
 
-  const summitPoints = m.contract("SummitPoints", [], { after: [summitRouter] });
-  const initSummitPointsCall = m.call(summitPoints, "initialize", [deployer], { after: [summitPoints] });
+  const summitPoints = m.contract("SummitPoints", [], { after: [initSummitRouterCall] });
+  const initSummitPointsCall = m.call(summitPoints, "initialize", [gasRefund], { after: [summitPoints] });
 
   const summitReferrals = m.contract("SummitReferrals", [], { after: [initSummitPointsCall] });
-  const initSummitReferralsCall = m.call(summitReferrals, "initialize", [deployer], { after: [summitReferrals] });
+  const initSummitReferralsCall = m.call(summitReferrals, "initialize", [gasRefund], { after: [summitReferrals] });
 
   const summitVolumeAdapter = m.contract("SummitVolumeAdapterV1", [], { after: [initSummitReferralsCall] });
-  const initSummitVolumeAdapterCall = m.call(summitVolumeAdapter, "initialize", [deployer], {
+  const initSummitVolumeAdapterCall = m.call(summitVolumeAdapter, "initialize", [gasRefund], {
     after: [summitVolumeAdapter],
   });
 
-  const summitOracle = m.contract("SummitOracle", [summitRouter, deployOptions.oracle.stable, deployOptions.wnative], {
+  console.log({
+    summitRouter,
+    oracleParams,
+  });
+
+  const summitOracle = m.contract("SummitOracle", [summitRouter, oracleParams.stable, oracleParams.core], {
     after: [initSummitVolumeAdapterCall],
   });
 
