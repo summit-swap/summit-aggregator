@@ -57,6 +57,14 @@ contract SummitOracle is Maintainable, Recoverable {
         return "";
       }
     }
+    function _getName(address _token) internal view returns (string memory) {
+      if (_token == address(0)) return "";
+      try IERC20(_token).name() returns (string memory name) {
+        return name;
+      } catch {
+        return "";
+      }
+    }
     function _getDecimals(address _token) internal view returns (uint8) {
       if (_token == address(0)) return 18;
       try IERC20(_token).decimals() returns (uint8 dec) {
@@ -95,9 +103,26 @@ contract SummitOracle is Maintainable, Recoverable {
       }
     }
 
+    function getPriceNwNative(address _token, uint256 _nWnative) public view returns (uint256) {
+      // NATIVE (represented by address(0)) will always equal WNATIVE price
+      if (_token == address(0) || _token == address(WNATIVE)) return _nWnative;
+
+      try ROUTER.findBestPath(
+        _nWnative,
+        address(WNATIVE),
+        _token,
+        3
+      ) returns (FormattedOffer memory formattedOffer) {
+        return formattedOffer.getAmountOut();
+      } catch {
+        return 0;
+      }
+    }
+
     struct TokenData {
       address tokenAddress;
       string symbol;
+      string name;
       uint256 decimals;
       uint256 bonus;
       uint256 userAllowance;
@@ -105,14 +130,14 @@ contract SummitOracle is Maintainable, Recoverable {
       uint256 price;
     }
 
-    function getTokenData(address _user, address _token) public view returns (TokenData memory token) {
-      uint256 price = getPrice10Stable(_token);
+    function getTokenData(address _user, address _token, uint256 _nWnative) public view returns (TokenData memory token) {
       token = TokenData({
         tokenAddress: _token,
         symbol: _getSymbol(_token),
+        name: _getName(_token),
         decimals: _getDecimals(_token),
         bonus: _getBonus(_token),
-        price: price,
+        price: _nWnative > 0 ? getPriceNwNative(_token, _nWnative) : 0,
         userAllowance: _getAllowance(_user, _token),
         userBalance: _getBalance(_user, _token)
       });

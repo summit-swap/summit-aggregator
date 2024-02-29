@@ -1,9 +1,9 @@
 {
-  "SummitSwapEcosystem#SpiritSwapAdapter": "0x302Af364857820Ba70662C87A67c61EA1d221914",
-  "SummitSwapEcosystem#SpookySwapAdapter": "0x92cC9B9753B1eBEE991301925Fe98B4dDCbE0a7E",
-  "SummitSwapEcosystem#SummitRouter": "0x76F0022D0B49B4BD9b11a544aF9Dad07e3bb7d78",
-  "SummitSwapEcosystem#SummitPoints": "0x55bAFe2d365187ac371951229d8F4646b000E6c5",
-  "SummitSwapEcosystem#SummitReferrals": "0x0C39026C5a50EaC8B35432394689D5b89384c351",
-  "SummitSwapEcosystem#SummitVolumeAdapterV1": "0x0b8c5a615A97A1EE7281d7C0C0b8f09D6B9d5477",
-  "SummitSwapEcosystem#SummitOracle": "0xE54C3efED86db041De847266cE6f06e86d9Fd8C4"
+  "SpiritSwapAdapter#SpiritSwapAdapter": "0xC15a9B52e67FAdD99C5fd4b1Ac1039ce63Dd601A",
+  "SpookySwapAdapter#SpookySwapAdapter": "0x7566E345F8FB6958D9e090799214380c86441412",
+  "SummitPoints#SummitPoints": "0xB133A54de65cEf3D2f79F34dc245D8400286B4b8",
+  "SummitReferrals#SummitReferrals": "0x75089bA2E7aFAB54E2d8233165adF3085e561B98",
+  "SummitRouter#SummitRouter": "0x4064351d04Cb6B6Efcb0BA453BD6D15BFfd1A3cc",
+  "SummitOracle#SummitOracle": "0xF2B55ed9155Ec080EaaC9C941713FF1756Adaa4e",
+  "SummitVolumeAdapter#SummitVolumeAdapterV1": "0xFF2A40D8EAB525Bce81eFB7A22069D276D8c08c1"
 }

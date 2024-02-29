@@ -1,5 +1,5 @@
 const prefixedContractName = (contractName) => {
-  return `SummitSwapEcosystem#${contractName}`;
+  return `${contractName}#${contractName}`;
 };
 
 const getDeployedAddresses = async (networkId) => {

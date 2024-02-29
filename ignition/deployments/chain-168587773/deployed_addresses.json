@@ -3,5 +3,8 @@
   "SummitPoints#SummitPoints": "0x823BAe3Ce3631c704F447489249e28C254439F83",
   "SummitReferrals#SummitReferrals": "0xb2B5fd958D7aE76183708c234c52D31E42b6bC05",
   "SummitRouter#SummitRouter": "0x3c3190E928D93D69464024e04A624739a45e6e96",
-  "SummitVolumeAdapter#SummitVolumeAdapterV1": "0xD9b3b246ac3B6e44641443fec1e3749df72050b8"
+  "SummitVolumeAdapter#SummitVolumeAdapterV1": "0xD9b3b246ac3B6e44641443fec1e3749df72050b8",
+  "SummitOracle#SummitOracle": "0x6fe22397961A702c4EDF97948cc91704C275ebb9",
+  "Multicall#Multicall": "0x0d5FB48134f42CAcE14E9242FFCdF2002D16a943",
+  "BlasterSwapAdapter#BlasterSwapAdapter": "0x57Bb1FF6376d8c0aD39cc2091D3065FdB2a28c12"
 }
