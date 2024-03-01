@@ -1,0 +1,16 @@
+{
+  "GasRefund#GasRefund": "0x823BAe3Ce3631c704F447489249e28C254439F83",
+  "MonoswapV2Adapter#MonoswapV2Adapter": "0xb2B5fd958D7aE76183708c234c52D31E42b6bC05",
+  "MonoswapV3Adapter#MonoswapV3Adapter": "0x3c3190E928D93D69464024e04A624739a45e6e96",
+  "Multicall#Multicall": "0xD9b3b246ac3B6e44641443fec1e3749df72050b8",
+  "Thruster10FeeV2Adapter#Thruster10FeeV2Adapter": "0x1616B102A4c3004B496e5fc53C9D3B649c311028",
+  "Thruster3FeeV2Adapter#Thruster3FeeV2Adapter": "0x9465D28130ef07052542e7CdbDA15886cfD84E6D",
+  "ThrusterV3Adapter#ThrusterV3Adapter": "0xE8aE666CEA4c8c2D00F215c1Da2F6588674b4f8D",
+  "SummitPoints#SummitPoints": "0x0d5FB48134f42CAcE14E9242FFCdF2002D16a943",
+  "SummitReferrals#SummitReferrals": "0x57Bb1FF6376d8c0aD39cc2091D3065FdB2a28c12",
+  "SummitRouter#SummitRouter": "0x87AA9f75A54858c32F189C3B60D12d754E7c7b49",
+  "SummitVolumeAdapter#SummitVolumeAdapterV1": "0xf09FbDe3EaDBE6E804fe13dfdC57C016fe738d17",
+  "CyberBlastV2Adapter#CyberBlastV2Adapter": "0x31904E61ddcC7F91CD12f703F16d796B7562fe07",
+  "DYORSwapV2Adapter#DYORSwapV2Adapter": "0xC8c454a36DF2C3644968bB18653dbF715535c9eC",
+  "SummitOracle#SummitOracle": "0xE6B0a5a3c973a2D86C1586Ad5C1EFbEE6923E8bf"
+}

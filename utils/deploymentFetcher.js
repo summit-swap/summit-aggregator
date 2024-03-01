@@ -20,6 +20,8 @@ const getDeployedContractAddress = async (networkId, contractName) => {
   return address;
 };
 
+module.exports.getDeployedContractAddress = getDeployedContractAddress;
+
 const getDeployedArtifact = async (networkId, contractName) => {
   path = `../ignition/deployments/chain-${networkId}/artifacts/${prefixedContractName(contractName)}.json`;
   try {

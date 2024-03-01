@@ -8,6 +8,7 @@ require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-gas-reporter");
 
 // Tasks
+require("./tasks/update-adapters-2");
 require("./tasks/check-bal");
 require("./tasks/update-token-bonuses");
 require("./tasks/sync-adapters");
@@ -43,6 +44,7 @@ const FANTOM_PK_DEPLOYER = getEnvValSafe("FANTOM_PK_DEPLOYER");
 
 const ETHERSCAN_API_KEY = getEnvValSafe("ETHERSCAN_API_KEY", false);
 const FANTOM_API_KEY = getEnvValSafe("FANTOM_API_KEY");
+const BLAST_API_KEY = getEnvValSafe("BLAST_API_KEY");
 
 function getEnvValSafe(key, required = true) {
   const endpoint = process.env[key];
@@ -71,7 +73,19 @@ module.exports = {
     },
   },
   etherscan: {
-    apiKey: FANTOM_API_KEY,
+    apiKey: {
+      blast: BLAST_API_KEY,
+    },
+    customChains: [
+      {
+        network: "blast",
+        chainId: 81457,
+        urls: {
+          apiURL: "https://api.blastscan.io/api",
+          browserURL: BLAST_RPC,
+        },
+      },
+    ],
   },
   defaultNetwork: "hardhat",
   ignition: {
@@ -135,6 +149,7 @@ module.exports = {
     blast: {
       chainId: 81457,
       url: BLAST_RPC,
+      gasPrice: 100000000,
       accounts: [BLAST_PK_DEPLOYER],
     },
     fantom: {

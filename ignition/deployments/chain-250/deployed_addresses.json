@@ -5,5 +5,8 @@
   "SummitReferrals#SummitReferrals": "0x75089bA2E7aFAB54E2d8233165adF3085e561B98",
   "SummitRouter#SummitRouter": "0x4064351d04Cb6B6Efcb0BA453BD6D15BFfd1A3cc",
   "SummitOracle#SummitOracle": "0xF2B55ed9155Ec080EaaC9C941713FF1756Adaa4e",
-  "SummitVolumeAdapter#SummitVolumeAdapterV1": "0xFF2A40D8EAB525Bce81eFB7A22069D276D8c08c1"
+  "SummitVolumeAdapter#SummitVolumeAdapterV1": "0xFF2A40D8EAB525Bce81eFB7A22069D276D8c08c1",
+  "FNGRToken#FNGRToken": "0xb21a44345903E4b1AfbFC05040FD2075A67cC58C",
+  "SafeFingerToken#SafeFingerToken": "0x140B2685F7575D39D940D77bB43cCE341065a6D2",
+  "BlastAwayToken#BlastAwayToken": "0x075b5EC83232e8C5361e40cb52F24C1e273F1C78"
 }
