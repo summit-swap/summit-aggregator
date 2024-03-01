@@ -23,4 +23,6 @@ interface IKyberPool {
     function token0() external view returns (address);
 
     function token1() external view returns (address);
+
+    function swapFeeUnits() external view returns (uint24);
 }

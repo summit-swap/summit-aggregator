@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
-import { IUniV3likeQuoterCore } from '../../IUniV3likeQuoterCore.sol';
+import { IUniV3likeQuoterCore } from './IUniV3likeQuoterCore.sol';
 
 // temporary swap variables, some of which will be used to update the pool state
 struct SwapData {

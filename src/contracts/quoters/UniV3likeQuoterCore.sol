@@ -5,11 +5,11 @@ pragma experimental ABIEncoderV2;
 import "@uniswap/v3-core/contracts/libraries/LowGasSafeMath.sol";
 import "@uniswap/v3-core/contracts/libraries/LiquidityMath.sol";
 import "@uniswap/v3-core/contracts/libraries/FixedPoint128.sol";
-import "@uniswap/v3-core/contracts/libraries/SafeCast.sol";
-import "@uniswap/v3-core/contracts/libraries/TickMath.sol";
-import "@uniswap/v3-core/contracts/libraries/FullMath.sol";
-import "@uniswap/v3-core/contracts/libraries/SwapMath.sol";
-import "./IUniV3likeQuoterCore.sol";
+import "../lib/SafeCast.sol";
+import "../lib/TickMath.sol";
+import "../lib/FullMath.sol";
+import "../lib/SwapMath.sol";
+import "../interface/IUniV3likeQuoterCore.sol";
 
 
 abstract contract UniV3likeQuoterCore {

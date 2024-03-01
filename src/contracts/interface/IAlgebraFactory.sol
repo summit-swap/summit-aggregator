@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity >=0.7.5;
-pragma abicoder v2;
+// SPDX-License-Identifier: GPL-3.0-only
+pragma solidity ^0.8.0;
+pragma experimental ABIEncoderV2;
 
 interface IAlgebraFactory {
     function poolByPair(address, address) external view returns (address);

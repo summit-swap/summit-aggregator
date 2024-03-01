@@ -2,9 +2,8 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
-import "@uniswap/v3-periphery/contracts/base/PeripheryImmutableState.sol";
-import "@uniswap/v3-periphery/contracts/libraries/PoolAddress.sol";
-
+import "../../lib/PeripheryImmutableState.sol";
+import "../../lib/PoolAddress.sol";
 import "../../interface/IAlgebraStaticQuoter.sol";
 import "../../interface/IAlgebraFactory.sol";
 import "../../lib/PathNoFee.sol";

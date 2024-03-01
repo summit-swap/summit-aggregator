@@ -28,6 +28,11 @@ module.exports.logExistingTokenBonusMultipliers = async (SummitRouter, networkId
 
 const getAdapterAddressesFromConfig = async (networkId) => {
   const adapters = await getAdapterConfigs(networkId);
+
+  console.log({
+    adapters,
+  });
+
   return Promise.all(
     Object.keys(adapters).map(async (contractName) => getDeployedContractAddress(networkId, contractName))
   );

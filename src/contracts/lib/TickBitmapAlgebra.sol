@@ -2,10 +2,10 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
-import '@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol';
-import '@uniswap/v3-core/contracts/libraries/BitMath.sol';
+import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import "../lib/BitMath.sol";
 
-import '../interface/IAlgebraPool.sol';
+import "../interface/IAlgebraPool.sol";
 
 /// @title Packed tick initialized state library
 /// @notice Stores a packed mapping of tick index to its initialized state

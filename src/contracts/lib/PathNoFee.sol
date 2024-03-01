@@ -2,7 +2,8 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
-import '@uniswap/v3-periphery/contracts/libraries/BytesLib.sol';
+import "./BytesLib.sol";
+import "./FullMath.sol";
 
 library PathNoFee {
     using BytesLib for bytes;
