@@ -16,34 +16,19 @@ task("update-hop-token-prices", "Updates SummitRouter hop token prices using Sum
   const SummitOracle = await getDeployedContract(networkId, "SummitOracle");
 
   const tokens = [
-    "0x0000000000000000000000000000000000000000", // FTM
-    "0x695921034f0387eAc4e11620EE91b1b15A6A09fE", // WETH_LZ
-    "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // WFTM
-    "0x1B6382DBDEa11d97f24495C9A90b7c88469134a4", // USDC_AXL
-    "0xd226392C23fb3476274ED6759D4a478db3197d82", // USDT_AXL
-    "0xD5d5350F42CB484036A1C1aF5F2DF77eAFadcAFF", // DAI_AXL
-    "0x28a92dde19d9989f39a49905d7c9c2fac7799bdf", // USDC_LZ
-    "0xcc1b99ddac1a33c201a742a1851662e87bc7f22c", // USDT_LZ
-  ];
-
-  const fetchedMults = await Promise.all(tokens.map((token) => SummitRouter.TOKEN_VOLUME_MULTIPLIERS(token)));
-  console.log({
-    existingMults: fetchedMults,
-  });
+    "0x0000000000000000000000000000000000000000", // ETH
+    "0x4300000000000000000000000000000000000004", // WETH
+    "0x4300000000000000000000000000000000000003", // USDB
+  ]; // WETH
 
   const multifier = (price, decOffset = 0) => {
     return eN(price, 12 + decOffset);
   };
 
   const mults = [
-    multifier(0.4458), // FTM
-    multifier(3267.23), // WETH_LZ
-    multifier(0.4458), // WFTM
-    multifier(1, 12), // USDC_AXL
-    multifier(1, 12), // USDT_AXL
-    multifier(1, 12), // DAI_AXL
-    multifier(1, 12), // USDC_LZ
-    multifier(1, 12), // USDT_LZ
+    multifier(3409.82), // ETH
+    multifier(3409.82), // WETH
+    multifier(1), // USDB
   ];
 
   await SummitRouter.connect(deployer).setTokenVolumeMultipliers(tokens, mults).then(finale);

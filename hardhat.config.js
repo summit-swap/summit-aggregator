@@ -8,6 +8,7 @@ require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-gas-reporter");
 
 // Tasks
+require("./tasks/test-queries");
 require("./tasks/update-adapters-2");
 require("./tasks/check-bal");
 require("./tasks/update-token-bonuses");

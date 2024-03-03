@@ -3,14 +3,14 @@ const { ethers } = require("hardhat");
 const { setTestEnv, addresses } = require("../../../utils/test-env");
 const { uniV3 } = addresses.avalanche;
 
-describe("SummitAdapter - UniswapV3", function () {
+describe("SummitAdapter - ThrusterV3__2", function () {
   let testEnv;
   let tkns;
   let ate; // adapter-test-env
 
   before(async () => {
-    const networkName = "avalanche";
-    const forkBlockNumber = 256323;
+    const networkName = "blast";
+    const forkBlockNumber = 32551153;
     testEnv = await setTestEnv(networkName, forkBlockNumber);
     tkns = testEnv.supportedTkns;
 

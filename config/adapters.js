@@ -50,6 +50,15 @@ module.exports = {
       fee: 3,
       gasEstimate: 120000,
     },
+    CyberBlastV3Adapter: {
+      name: "CyberBlastV3Adapter",
+      type: "UniswapV3Adapter",
+      factory: "0x57eF21959CF9536483bA6ddB10Ad73E2a06b85ff",
+      quoter: "0x273508AeC0144aD26FA62333d535C29BeDB5CF7a",
+      defaultFees: [500, 3_000, 10_000],
+      gasEstimate: 300000,
+      quoterGasLimit: 300000,
+    },
     Thruster3FeeV2Adapter: {
       name: "Thruster3FeeV2Adapter",
       type: "UniswapV2Adapter",
@@ -57,7 +66,7 @@ module.exports = {
       fee: 3,
       gasEstimate: 120000,
     },
-    Thruster10FeeV2Adapter: {
+    Thruster10FeeV2Adapter__2: {
       name: "Thruster10FeeV2Adapter",
       type: "UniswapV2Adapter",
       factory: "0x37836821a2c03c171fB1a595767f4a16e2b93Fc4",
@@ -73,11 +82,11 @@ module.exports = {
       gasEstimate: 300000,
       quoterGasLimit: 300000,
     },
-    MonoswapV2Adapter: {
+    MonoswapV2Adapter__2: {
       name: "MonoswapV2Adapter",
       type: "UniswapV2Adapter",
-      factory: "0xeb7adbef26f615EBFfAdfAdff39dBe52E4613F41",
-      fee: 2,
+      factory: "0xE27cb06A15230A7480d02956a3521E78C5bFD2D0",
+      fee: 1,
       gasEstimate: 120000,
     },
     MonoswapV3Adapter: {

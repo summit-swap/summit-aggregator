@@ -189,6 +189,7 @@ module.exports.forkGlobalNetwork = async (_blockNumber, _networkId) => {
 
 module.exports.getTknContractsForNetwork = async (networkName) => {
   const { assets } = require("../misc/addresses.json")[networkName];
+
   return Promise.all(
     Object.keys(assets).map((tknSymbol) => {
       return _getTokenContract(assets[tknSymbol]).then((tc) => [tknSymbol, tc]);

@@ -14,5 +14,7 @@
   "DYORSwapV2Adapter#DYORSwapV2Adapter": "0xC8c454a36DF2C3644968bB18653dbF715535c9eC",
   "SummitOracle#SummitOracle": "0xE6B0a5a3c973a2D86C1586Ad5C1EFbEE6923E8bf",
   "UniV3StaticQuoter#UniswapV3StaticQuoter": "0x273508AeC0144aD26FA62333d535C29BeDB5CF7a",
-  "ThrusterV3Adapter__2#ThrusterV3Adapter__2": "0x6bB85283dB92d8E4629B18DABF05988Da8EeC815"
+  "ThrusterV3Adapter__2#ThrusterV3Adapter__2": "0x6bB85283dB92d8E4629B18DABF05988Da8EeC815",
+  "MonoswapV2Adapter__2#MonoswapV2Adapter__2": "0xA7effb5b1ccDbd38284498aDF3DEF7FD54F83Cf2",
+  "Thruster10FeeV2Adapter__2#Thruster10FeeV2Adapter__2": "0xb7F62D059784Ea5Ad8E2BB0b5C3A8Dd3DcCe0aa7"
 }
