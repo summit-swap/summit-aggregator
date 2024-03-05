@@ -16,5 +16,10 @@
   "UniV3StaticQuoter#UniswapV3StaticQuoter": "0x273508AeC0144aD26FA62333d535C29BeDB5CF7a",
   "ThrusterV3Adapter__2#ThrusterV3Adapter__2": "0x6bB85283dB92d8E4629B18DABF05988Da8EeC815",
   "MonoswapV2Adapter__2#MonoswapV2Adapter__2": "0xA7effb5b1ccDbd38284498aDF3DEF7FD54F83Cf2",
-  "Thruster10FeeV2Adapter__2#Thruster10FeeV2Adapter__2": "0xb7F62D059784Ea5Ad8E2BB0b5C3A8Dd3DcCe0aa7"
+  "Thruster10FeeV2Adapter__2#Thruster10FeeV2Adapter__2": "0xb7F62D059784Ea5Ad8E2BB0b5C3A8Dd3DcCe0aa7",
+  "CyberBlastV3Adapter#CyberBlastV3Adapter": "0x486db1E07a34993c0092D1E8569E9b87DeCB4c2b",
+  "SummitAdmin#SummitAdmin": "0x4F2D04581b9c418CfbacefB9c8ab2B0e64362D0D",
+  "BlasterSwapV2Adapter#BlasterSwapV2Adapter": "0x8C3dA9710ca9c1CcB9c02F6De430887D25323022",
+  "BitconnectV2Adapter#BitconnectV2Adapter": "0x4c2760c267A0594708EAa6160EA45D6Cbd40C23F",
+  "HyperBlastV2Adapter#HyperBlastV2Adapter": "0x4220B9ad387B1B069a72A00D13fC701DD514a3B3"
 }

@@ -9,4 +9,4 @@ artifacts
 cache
 .env
 out
-.vscode
+.yarn

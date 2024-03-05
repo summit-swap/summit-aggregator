@@ -28,7 +28,8 @@
     "ignite:blast-test": "npx hardhat ignition deploy ignition/modules/blast-test --network blast-test",
     "ignite:blast": "npx hardhat ignition deploy ignition/modules/blast/Root.js --network blast",
     "update-token-bonuses": "npx hardhat update-token-bonuses --network blast",
-    "update-user-boosts": "npx hardhat update-referrer-level-boosts --network blast"
+    "update-user-boosts": "npx hardhat update-referrer-level-boosts --network blast",
+    "update-adapters": "npx hardhat update-adapters-2 --network blast"
   },
   "author": "",
   "license": "ISC",

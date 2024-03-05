@@ -82,13 +82,13 @@ module.exports = {
       gasEstimate: 300000,
       quoterGasLimit: 300000,
     },
-    MonoswapV2Adapter__2: {
-      name: "MonoswapV2Adapter",
-      type: "UniswapV2Adapter",
-      factory: "0xE27cb06A15230A7480d02956a3521E78C5bFD2D0",
-      fee: 1,
-      gasEstimate: 120000,
-    },
+    // MonoswapV2Adapter__2: {
+    //   name: "MonoswapV2Adapter",
+    //   type: "UniswapV2Adapter",
+    //   factory: "0xE27cb06A15230A7480d02956a3521E78C5bFD2D0",
+    //   fee: 1,
+    //   gasEstimate: 120000,
+    // },
     MonoswapV3Adapter: {
       name: "MonoswapV3Adapter",
       type: "UniswapV3Adapter",
@@ -97,6 +97,27 @@ module.exports = {
       defaultFees: [500, 3_000, 10_000],
       gasEstimate: 300000,
       quoterGasLimit: 300000,
+    },
+    BlasterSwapV2Adapter: {
+      name: "BlasterSwapV2Adapter",
+      type: "UniswapV2Adapter",
+      factory: "0x9cc1599d4378ea41d444642d18aa9be44f709ffd",
+      fee: 2,
+      gasEstimate: 120000,
+    },
+    HyperBlastV2Adapter: {
+      name: "HyperBlastV2Adapter",
+      type: "UniswapV2Adapter",
+      factory: "0xd97ffc2041a8ab8f6bc4aee7ee8eca485381d088",
+      fee: 2,
+      gasEstimate: 120000,
+    },
+    BitconnectV2Adapter: {
+      name: "BitconnectV2Adapter",
+      type: "UniswapV2Adapter",
+      factory: "0x08938ee323c6da637eff60e854812c16249d4485",
+      fee: 3,
+      gesEstimate: 120000,
     },
   },
 };

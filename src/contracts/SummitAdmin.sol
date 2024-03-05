@@ -52,7 +52,7 @@ contract SummitAdmin is Maintainable {
   function router_setTokenVolumeMultipliers(address[] memory _tokens, uint256[] memory _mults) public onlyMaintainer {
     router.setTokenVolumeMultipliers(_tokens,_mults);
   }
-  function router_updateTokenVolumeMultipliers(address[] memory _tokens, uint256[] memory _mults) public onlyMaintainer {
+  function router_setTokenBonusMultipliers(address[] memory _tokens, uint256[] memory _mults) public onlyMaintainer {
     router.setTokenBonusMultipliers(_tokens,_mults);
   }
 
