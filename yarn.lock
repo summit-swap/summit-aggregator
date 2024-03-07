@@ -909,6 +909,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nomicfoundation/hardhat-foundry@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@nomicfoundation/hardhat-foundry@npm:1.1.1"
+  dependencies:
+    chalk: ^2.4.2
+  peerDependencies:
+    hardhat: ^2.17.2
+  checksum: 35d241638c1dbcfd14ed2006d4d7bee4e40d50bd866fcf4f02cb06084d5220182bcaf3f57ea5e99ee40335dd15a9392e106a29e9fd3cf74ab87e9215573ce787
+  languageName: node
+  linkType: hard
+
 "@nomicfoundation/hardhat-ignition-ethers@npm:^0.14.0":
   version: 0.14.0
   resolution: "@nomicfoundation/hardhat-ignition-ethers@npm:0.14.0"
@@ -1612,11 +1623,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:^20.11.20":
-  version: 20.11.24
-  resolution: "@types/node@npm:20.11.24"
+  version: 20.11.25
+  resolution: "@types/node@npm:20.11.25"
   dependencies:
     undici-types: ~5.26.4
-  checksum: b11a650e09e254f4725c94f226752b69949a9ac4a5e004e98f109437ac50b02df3ab4d12b2086722fedf2cb62e68b9e723abd3f358a7d7d90d741a0d3bee90c2
+  checksum: bdb29da3f3dc687a0104cb70e30b5277d9df8f22843a4ed94835762683a95a8a0ea0c2ed0cf96f6eeff348491dd50dd9b20307d08f71ba7cb489d54a81cbbfec
   languageName: node
   linkType: hard
 
@@ -1905,15 +1916,15 @@ __metadata:
   linkType: hard
 
 "amazon-cognito-identity-js@npm:^6.0.1, amazon-cognito-identity-js@npm:^6.3.6":
-  version: 6.3.11
-  resolution: "amazon-cognito-identity-js@npm:6.3.11"
+  version: 6.3.12
+  resolution: "amazon-cognito-identity-js@npm:6.3.12"
   dependencies:
     "@aws-crypto/sha256-js": 1.2.2
     buffer: 4.9.2
     fast-base64-decode: ^1.0.0
     isomorphic-unfetch: ^3.0.0
     js-cookie: ^2.2.1
-  checksum: be4152cf7e572097d92170c0d4b3d4537a199a9a9a32343dff243156c105a030c065b8696c1b2dcc51ed09d1e4ac2f98f69a0d8e35995eb889421114a26d6adf
+  checksum: d3ccf7e4b2d6b9428d92af5820b7c348f332acc39c5f130c7eaeaf0f05ee9bf52264f866f71b784ec62c53368d60c3ac339c58213594062d826b435b46014323
   languageName: node
   linkType: hard
 
@@ -2915,39 +2926,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"data-view-buffer@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "data-view-buffer@npm:1.0.1"
-  dependencies:
-    call-bind: ^1.0.6
-    es-errors: ^1.3.0
-    is-data-view: ^1.0.1
-  checksum: ce24348f3c6231223b216da92e7e6a57a12b4af81a23f27eff8feabdf06acfb16c00639c8b705ca4d167f761cfc756e27e5f065d0a1f840c10b907fdaf8b988c
-  languageName: node
-  linkType: hard
-
-"data-view-byte-length@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "data-view-byte-length@npm:1.0.0"
-  dependencies:
-    call-bind: ^1.0.6
-    es-errors: ^1.3.0
-    is-data-view: ^1.0.1
-  checksum: fe516c30d15019717ffad5262c74e600b017f8b36103f2e5fdd1f08520fd1a93d32bff76397bfc255f9d4122ddc0eddb82c445b271e2d940d931d1944020804f
-  languageName: node
-  linkType: hard
-
-"data-view-byte-offset@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "data-view-byte-offset@npm:1.0.0"
-  dependencies:
-    call-bind: ^1.0.6
-    es-errors: ^1.3.0
-    is-data-view: ^1.0.1
-  checksum: 7f0bf8720b7414ca719eedf1846aeec392f2054d7af707c5dc9a753cc77eb8625f067fa901e0b5127e831f9da9056138d894b9c2be79c27a21f6db5824f009c2
-  languageName: node
-  linkType: hard
-
 "death@npm:^1.1.0":
   version: 1.1.0
   resolution: "death@npm:1.1.0"
@@ -3100,7 +3078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"elliptic@npm:6.5.4, elliptic@npm:^6.5.2, elliptic@npm:^6.5.4":
+"elliptic@npm:6.5.4":
   version: 6.5.4
   resolution: "elliptic@npm:6.5.4"
   dependencies:
@@ -3112,6 +3090,21 @@ __metadata:
     minimalistic-assert: ^1.0.1
     minimalistic-crypto-utils: ^1.0.1
   checksum: d56d21fd04e97869f7ffcc92e18903b9f67f2d4637a23c860492fbbff5a3155fd9ca0184ce0c865dd6eb2487d234ce9551335c021c376cd2d3b7cb749c7d10f4
+  languageName: node
+  linkType: hard
+
+"elliptic@npm:^6.5.2, elliptic@npm:^6.5.4":
+  version: 6.5.5
+  resolution: "elliptic@npm:6.5.5"
+  dependencies:
+    bn.js: ^4.11.9
+    brorand: ^1.1.0
+    hash.js: ^1.0.0
+    hmac-drbg: ^1.0.1
+    inherits: ^2.0.4
+    minimalistic-assert: ^1.0.1
+    minimalistic-crypto-utils: ^1.0.1
+  checksum: ec9105e4469eb3b32b0ee2579756c888ddf3f99d259aa0d65fccb906ee877768aaf8880caae73e3e669c9a4adeb3eb1945703aa974ec5000d2d33a239f4567eb
   languageName: node
   linkType: hard
 
@@ -3179,16 +3172,13 @@ __metadata:
   linkType: hard
 
 "es-abstract@npm:^1.22.1, es-abstract@npm:^1.22.3":
-  version: 1.23.0
-  resolution: "es-abstract@npm:1.23.0"
+  version: 1.22.5
+  resolution: "es-abstract@npm:1.22.5"
   dependencies:
     array-buffer-byte-length: ^1.0.1
     arraybuffer.prototype.slice: ^1.0.3
     available-typed-arrays: ^1.0.7
     call-bind: ^1.0.7
-    data-view-buffer: ^1.0.1
-    data-view-byte-length: ^1.0.0
-    data-view-byte-offset: ^1.0.0
     es-define-property: ^1.0.0
     es-errors: ^1.3.0
     es-set-tostringtag: ^2.0.3
@@ -3205,7 +3195,6 @@ __metadata:
     internal-slot: ^1.0.7
     is-array-buffer: ^3.0.4
     is-callable: ^1.2.7
-    is-data-view: ^1.0.1
     is-negative-zero: ^2.0.3
     is-regex: ^1.1.4
     is-shared-array-buffer: ^1.0.3
@@ -3227,7 +3216,7 @@ __metadata:
     typed-array-length: ^1.0.5
     unbox-primitive: ^1.0.2
     which-typed-array: ^1.1.14
-  checksum: 7680ecf8474adeb9eb294ed1cd37eec28c70a73598af6f4915e32450b0c95f19165a2c4d2e50453ac950f0f58a39ee8338dc16dd5fd216dcdbb1995ada293100
+  checksum: 984ab92f8226812365d1c4ecf12f3a408a4cc7a5bfe448f231fd39fa1ca9fb8cd65f27c76fc1a0bc3d1492c54b6637e57ad8e4954402e39bb916e9db4bcdbc61
   languageName: node
   linkType: hard
 
@@ -4632,15 +4621,6 @@ __metadata:
   dependencies:
     hasown: ^2.0.0
   checksum: 256559ee8a9488af90e4bad16f5583c6d59e92f0742e9e8bb4331e758521ee86b810b93bae44f390766ffbc518a0488b18d9dab7da9a5ff997d499efc9403f7c
-  languageName: node
-  linkType: hard
-
-"is-data-view@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "is-data-view@npm:1.0.1"
-  dependencies:
-    is-typed-array: ^1.1.13
-  checksum: 4ba4562ac2b2ec005fefe48269d6bd0152785458cd253c746154ffb8a8ab506a29d0cfb3b74af87513843776a88e4981ae25c89457bf640a33748eab1a7216b5
   languageName: node
   linkType: hard
 
@@ -6061,11 +6041,11 @@ __metadata:
   linkType: hard
 
 "qs@npm:^6.4.0, qs@npm:^6.9.4":
-  version: 6.11.2
-  resolution: "qs@npm:6.11.2"
+  version: 6.12.0
+  resolution: "qs@npm:6.12.0"
   dependencies:
-    side-channel: ^1.0.4
-  checksum: e812f3c590b2262548647d62f1637b6989cc56656dc960b893fe2098d96e1bd633f36576f4cd7564dfbff9db42e17775884db96d846bebe4f37420d073ecdc0b
+    side-channel: ^1.0.6
+  checksum: ba007fb2488880b9c6c3df356fe6888b9c1f4c5127552edac214486cfe83a332de09a5c40d490d79bb27bef977ba1085a8497512ff52eaac72e26564f77ce908
   languageName: node
   linkType: hard
 
@@ -6567,7 +6547,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"side-channel@npm:^1.0.4":
+"side-channel@npm:^1.0.4, side-channel@npm:^1.0.6":
   version: 1.0.6
   resolution: "side-channel@npm:1.0.6"
   dependencies:
@@ -7003,6 +6983,7 @@ __metadata:
     "@aperture_finance/uni-v3-lib": ^1.2.1
     "@nomicfoundation/hardhat-chai-matchers": ^2.0.6
     "@nomicfoundation/hardhat-ethers": ^3.0.4
+    "@nomicfoundation/hardhat-foundry": ^1.1.1
     "@nomicfoundation/hardhat-ignition": ^0.14.0
     "@nomicfoundation/hardhat-ignition-ethers": ^0.14.0
     "@nomicfoundation/hardhat-network-helpers": ^1.0.10
@@ -7483,12 +7464,12 @@ __metadata:
   linkType: hard
 
 "typescript@npm:^5.2.2":
-  version: 5.3.3
-  resolution: "typescript@npm:5.3.3"
+  version: 5.4.2
+  resolution: "typescript@npm:5.4.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 2007ccb6e51bbbf6fde0a78099efe04dc1c3dfbdff04ca3b6a8bc717991862b39fd6126c0c3ebf2d2d98ac5e960bcaa873826bb2bb241f14277034148f41f6a2
+  checksum: 96d80fde25a09bcb04d399082fb27a808a9e17c2111e43849d2aafbd642d835e4f4ef0de09b0ba795ec2a700be6c4c2c3f62bf4660c05404c948727b5bbfb32a
   languageName: node
   linkType: hard
 
@@ -7503,12 +7484,12 @@ __metadata:
   linkType: hard
 
 "typescript@patch:typescript@^5.2.2#~builtin<compat/typescript>":
-  version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#~builtin<compat/typescript>::version=5.3.3&hash=bda367"
+  version: 5.4.2
+  resolution: "typescript@patch:typescript@npm%3A5.4.2#~builtin<compat/typescript>::version=5.4.2&hash=bda367"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: f61375590b3162599f0f0d5b8737877ac0a7bc52761dbb585d67e7b8753a3a4c42d9a554c4cc929f591ffcf3a2b0602f65ae3ce74714fd5652623a816862b610
+  checksum: c1b669146bca5529873aae60870e243fa8140c85f57ca32c42f898f586d73ce4a6b4f6bb02ae312729e214d7f5859a0c70da3e527a116fdf5ad00c9fc733ecc6
   languageName: node
   linkType: hard
 

@@ -16,6 +16,7 @@ const SummitOracleV2Module = require("./ecosystem/SummitOracleV2");
 const HyperBlastV2__2Module = require("./adapters/UniswapV2/HyperBlastV2__2");
 const HyperBlastV2__3Module = require("./adapters/UniswapV2/HyperBlastV2__3");
 const BlasterSwapV2__2Module = require("./adapters/UniswapV2/BlasterSwapV2__2");
+const SummitOracleV3Module = require("./ecosystem/SummitOracleV3");
 
 module.exports = buildModule("Root", (m) => {
   m.useModule(SummitVolumeAdapterLinkingModule);
@@ -40,4 +41,6 @@ module.exports = buildModule("Root", (m) => {
   m.useModule(HyperBlastV2__2Module);
   m.useModule(HyperBlastV2__3Module);
   m.useModule(BlasterSwapV2__2Module);
+
+  m.useModule(SummitOracleV3Module);
 });

@@ -6,6 +6,7 @@ require("@nomicfoundation/hardhat-chai-matchers");
 require("@nomicfoundation/hardhat-network-helpers");
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-gas-reporter");
+require("@nomicfoundation/hardhat-foundry");
 const tdly = require("@tenderly/hardhat-tenderly");
 tdly.setup();
 
