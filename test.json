@@ -1,0 +1,865 @@
+{
+  "compiler": { "version": "0.8.4+commit.c7e474f2" },
+  "language": "Solidity",
+  "output": {
+    "abi": [
+      {
+        "inputs": [
+          { "internalType": "address[]", "name": "_adapters", "type": "address[]" },
+          { "internalType": "address[]", "name": "_trustedTokens", "type": "address[]" },
+          { "internalType": "address", "name": "_feeClaimer", "type": "address" },
+          { "internalType": "address", "name": "_wrapped_native", "type": "address" }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      { "inputs": [], "name": "AlreadyInitialized", "type": "error" },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "_asset", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "Recovered",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "bytes32", "name": "role", "type": "bytes32" },
+          { "indexed": true, "internalType": "bytes32", "name": "previousAdminRole", "type": "bytes32" },
+          { "indexed": true, "internalType": "bytes32", "name": "newAdminRole", "type": "bytes32" }
+        ],
+        "name": "RoleAdminChanged",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "bytes32", "name": "role", "type": "bytes32" },
+          { "indexed": true, "internalType": "address", "name": "account", "type": "address" },
+          { "indexed": true, "internalType": "address", "name": "sender", "type": "address" }
+        ],
+        "name": "RoleGranted",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "bytes32", "name": "role", "type": "bytes32" },
+          { "indexed": true, "internalType": "address", "name": "account", "type": "address" },
+          { "indexed": true, "internalType": "address", "name": "sender", "type": "address" }
+        ],
+        "name": "RoleRevoked",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "_tokenIn", "type": "address" },
+          { "indexed": true, "internalType": "address", "name": "_tokenOut", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "_amountIn", "type": "uint256" },
+          { "indexed": false, "internalType": "uint256", "name": "_amountOut", "type": "uint256" }
+        ],
+        "name": "SummitSwap",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [{ "indexed": false, "internalType": "address[]", "name": "_newAdapters", "type": "address[]" }],
+        "name": "UpdatedAdapters",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": false, "internalType": "address", "name": "_oldFeeClaimer", "type": "address" },
+          { "indexed": false, "internalType": "address", "name": "_newFeeClaimer", "type": "address" }
+        ],
+        "name": "UpdatedFeeClaimer",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": false, "internalType": "uint256", "name": "_oldMinFee", "type": "uint256" },
+          { "indexed": false, "internalType": "uint256", "name": "_newMinFee", "type": "uint256" }
+        ],
+        "name": "UpdatedMinFee",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": false, "internalType": "address[]", "name": "_tokens", "type": "address[]" },
+          { "indexed": false, "internalType": "uint256[]", "name": "_multipliers", "type": "uint256[]" }
+        ],
+        "name": "UpdatedTokenBonusMultipliers",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": false, "internalType": "address[]", "name": "_tokens", "type": "address[]" },
+          { "indexed": false, "internalType": "uint256[]", "name": "_pointMultipliers", "type": "uint256[]" }
+        ],
+        "name": "UpdatedTokenVolumeMultipliers",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [{ "indexed": false, "internalType": "address[]", "name": "_newTrustedTokens", "type": "address[]" }],
+        "name": "UpdatedTrustedTokens",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [{ "indexed": false, "internalType": "address", "name": "_volumeAdapter", "type": "address" }],
+        "name": "UpdatedVolumeAdapter",
+        "type": "event"
+      },
+      {
+        "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "name": "ADAPTERS",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "DEFAULT_ADMIN_ROLE",
+        "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "FEE_CLAIMER",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "FEE_DENOMINATOR",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "MAINTAINER_ROLE",
+        "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "MIN_FEE",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "NAME",
+        "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "NATIVE",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "name": "TOKEN_VOLUME_BONUS",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "name": "TOKEN_VOLUME_MULTIPLIERS",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "name": "TRUSTED_TOKENS",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "VOLUME_ADAPTER",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "WNATIVE",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "adaptersCount",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address", "name": "addedMaintainer", "type": "address" }],
+        "name": "addMaintainer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_amountIn", "type": "uint256" },
+          { "internalType": "address", "name": "_tokenIn", "type": "address" },
+          { "internalType": "address", "name": "_tokenOut", "type": "address" },
+          { "internalType": "uint256", "name": "_maxSteps", "type": "uint256" }
+        ],
+        "name": "findBestPath",
+        "outputs": [
+          {
+            "components": [
+              { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" },
+              { "internalType": "address[]", "name": "adapters", "type": "address[]" },
+              { "internalType": "address[]", "name": "path", "type": "address[]" },
+              { "internalType": "uint256", "name": "gasEstimate", "type": "uint256" }
+            ],
+            "internalType": "struct FormattedOffer",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_amountIn", "type": "uint256" },
+          { "internalType": "address", "name": "_tokenIn", "type": "address" },
+          { "internalType": "address", "name": "_tokenOut", "type": "address" },
+          { "internalType": "uint256", "name": "_maxSteps", "type": "uint256" },
+          { "internalType": "uint256", "name": "_gasPrice", "type": "uint256" }
+        ],
+        "name": "findBestPathWithGas",
+        "outputs": [
+          {
+            "components": [
+              { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" },
+              { "internalType": "address[]", "name": "adapters", "type": "address[]" },
+              { "internalType": "address[]", "name": "path", "type": "address[]" },
+              { "internalType": "uint256", "name": "gasEstimate", "type": "uint256" }
+            ],
+            "internalType": "struct FormattedOffer",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "bytes32", "name": "role", "type": "bytes32" }],
+        "name": "getRoleAdmin",
+        "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address", "name": "_token", "type": "address" }],
+        "name": "getTokenBonus",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "governor",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+          { "internalType": "address", "name": "account", "type": "address" }
+        ],
+        "name": "grantRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+          { "internalType": "address", "name": "account", "type": "address" }
+        ],
+        "name": "hasRole",
+        "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address", "name": "_governor", "type": "address" }],
+        "name": "initialize",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "initialized",
+        "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_amountIn", "type": "uint256" },
+          { "internalType": "address", "name": "_tokenIn", "type": "address" },
+          { "internalType": "address", "name": "_tokenOut", "type": "address" },
+          { "internalType": "uint8", "name": "_index", "type": "uint8" }
+        ],
+        "name": "queryAdapter",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_amountIn", "type": "uint256" },
+          { "internalType": "address", "name": "_tokenIn", "type": "address" },
+          { "internalType": "address", "name": "_tokenOut", "type": "address" },
+          { "internalType": "uint8[]", "name": "_options", "type": "uint8[]" }
+        ],
+        "name": "queryNoSplit",
+        "outputs": [
+          {
+            "components": [
+              { "internalType": "address", "name": "adapter", "type": "address" },
+              { "internalType": "address", "name": "tokenIn", "type": "address" },
+              { "internalType": "address", "name": "tokenOut", "type": "address" },
+              { "internalType": "uint256", "name": "amountOut", "type": "uint256" }
+            ],
+            "internalType": "struct Query",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_amountIn", "type": "uint256" },
+          { "internalType": "address", "name": "_tokenIn", "type": "address" },
+          { "internalType": "address", "name": "_tokenOut", "type": "address" }
+        ],
+        "name": "queryNoSplit",
+        "outputs": [
+          {
+            "components": [
+              { "internalType": "address", "name": "adapter", "type": "address" },
+              { "internalType": "address", "name": "tokenIn", "type": "address" },
+              { "internalType": "address", "name": "tokenOut", "type": "address" },
+              { "internalType": "uint256", "name": "amountOut", "type": "uint256" }
+            ],
+            "internalType": "struct Query",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "address", "name": "_tokenAddress", "type": "address" },
+          { "internalType": "uint256", "name": "_tokenAmount", "type": "uint256" }
+        ],
+        "name": "recoverERC20",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }],
+        "name": "recoverNATIVE",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address", "name": "removedMaintainer", "type": "address" }],
+        "name": "removeMaintainer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+          { "internalType": "address", "name": "account", "type": "address" }
+        ],
+        "name": "renounceRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "bytes32", "name": "role", "type": "bytes32" }],
+        "name": "renounceRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+          { "internalType": "address", "name": "account", "type": "address" }
+        ],
+        "name": "revokeRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address[]", "name": "_adapters", "type": "address[]" }],
+        "name": "setAdapters",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address", "name": "_wnative", "type": "address" }],
+        "name": "setAllowanceForWrapping",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address", "name": "_claimer", "type": "address" }],
+        "name": "setFeeClaimer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "uint256", "name": "_fee", "type": "uint256" }],
+        "name": "setMinFee",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "address[]", "name": "_tokens", "type": "address[]" },
+          { "internalType": "uint256[]", "name": "_multipliers", "type": "uint256[]" }
+        ],
+        "name": "setTokenBonusMultipliers",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "address[]", "name": "_tokens", "type": "address[]" },
+          { "internalType": "uint256[]", "name": "_volumeMultipliers", "type": "uint256[]" }
+        ],
+        "name": "setTokenVolumeMultipliers",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address[]", "name": "_trustedTokens", "type": "address[]" }],
+        "name": "setTrustedTokens",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address", "name": "_volumeAdapter", "type": "address" }],
+        "name": "setVolumeAdapter",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }],
+        "name": "supportsInterface",
+        "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "components": [
+              { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+              { "internalType": "uint256", "name": "amountOut", "type": "uint256" },
+              { "internalType": "address[]", "name": "path", "type": "address[]" },
+              { "internalType": "address[]", "name": "adapters", "type": "address[]" }
+            ],
+            "internalType": "struct Trade",
+            "name": "_trade",
+            "type": "tuple"
+          },
+          { "internalType": "address", "name": "_to", "type": "address" },
+          { "internalType": "uint256", "name": "_fee", "type": "uint256" }
+        ],
+        "name": "swapNoSplit",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "components": [
+              { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+              { "internalType": "uint256", "name": "amountOut", "type": "uint256" },
+              { "internalType": "address[]", "name": "path", "type": "address[]" },
+              { "internalType": "address[]", "name": "adapters", "type": "address[]" }
+            ],
+            "internalType": "struct Trade",
+            "name": "_trade",
+            "type": "tuple"
+          },
+          { "internalType": "address", "name": "_to", "type": "address" },
+          { "internalType": "uint256", "name": "_fee", "type": "uint256" }
+        ],
+        "name": "swapNoSplitFromNATIVE",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "components": [
+              { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+              { "internalType": "uint256", "name": "amountOut", "type": "uint256" },
+              { "internalType": "address[]", "name": "path", "type": "address[]" },
+              { "internalType": "address[]", "name": "adapters", "type": "address[]" }
+            ],
+            "internalType": "struct Trade",
+            "name": "_trade",
+            "type": "tuple"
+          },
+          { "internalType": "address", "name": "_to", "type": "address" },
+          { "internalType": "uint256", "name": "_fee", "type": "uint256" }
+        ],
+        "name": "swapNoSplitToNATIVE",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "components": [
+              { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+              { "internalType": "uint256", "name": "amountOut", "type": "uint256" },
+              { "internalType": "address[]", "name": "path", "type": "address[]" },
+              { "internalType": "address[]", "name": "adapters", "type": "address[]" }
+            ],
+            "internalType": "struct Trade",
+            "name": "_trade",
+            "type": "tuple"
+          },
+          { "internalType": "address", "name": "_to", "type": "address" },
+          { "internalType": "uint256", "name": "_fee", "type": "uint256" },
+          { "internalType": "uint256", "name": "_deadline", "type": "uint256" },
+          { "internalType": "uint8", "name": "_v", "type": "uint8" },
+          { "internalType": "bytes32", "name": "_r", "type": "bytes32" },
+          { "internalType": "bytes32", "name": "_s", "type": "bytes32" }
+        ],
+        "name": "swapNoSplitToNATIVEWithPermit",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "components": [
+              { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+              { "internalType": "uint256", "name": "amountOut", "type": "uint256" },
+              { "internalType": "address[]", "name": "path", "type": "address[]" },
+              { "internalType": "address[]", "name": "adapters", "type": "address[]" }
+            ],
+            "internalType": "struct Trade",
+            "name": "_trade",
+            "type": "tuple"
+          },
+          { "internalType": "address", "name": "_to", "type": "address" },
+          { "internalType": "uint256", "name": "_fee", "type": "uint256" },
+          { "internalType": "uint256", "name": "_deadline", "type": "uint256" },
+          { "internalType": "uint8", "name": "_v", "type": "uint8" },
+          { "internalType": "bytes32", "name": "_r", "type": "bytes32" },
+          { "internalType": "bytes32", "name": "_s", "type": "bytes32" }
+        ],
+        "name": "swapNoSplitWithPermit",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "trustedTokensCount",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      { "stateMutability": "payable", "type": "receive" }
+    ],
+    "devdoc": {
+      "kind": "dev",
+      "methods": {
+        "getRoleAdmin(bytes32)": {
+          "details": "Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}."
+        },
+        "grantRole(bytes32,address)": {
+          "details": "Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleGranted} event."
+        },
+        "hasRole(bytes32,address)": { "details": "Returns `true` if `account` has been granted `role`." },
+        "recoverERC20(address,uint256)": {
+          "params": { "_tokenAddress": "token address", "_tokenAmount": "amount to recover" }
+        },
+        "recoverNATIVE(uint256)": { "params": { "_amount": "amount" } },
+        "renounceRole(bytes32,address)": {
+          "details": "Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`. May emit a {RoleRevoked} event."
+        },
+        "revokeRole(bytes32,address)": {
+          "details": "Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleRevoked} event."
+        },
+        "supportsInterface(bytes4)": { "details": "See {IERC165-supportsInterface}." }
+      },
+      "version": 1
+    },
+    "userdoc": {
+      "kind": "user",
+      "methods": {
+        "findBestPath(uint256,address,address,uint256)": {
+          "notice": "Return path with best returns between two tokens"
+        },
+        "findBestPathWithGas(uint256,address,address,uint256,uint256)": {
+          "notice": "Return path with best returns between two tokens Takes gas-cost into account"
+        },
+        "queryAdapter(uint256,address,address,uint8)": { "notice": "Query single adapter" },
+        "queryNoSplit(uint256,address,address)": { "notice": "Query all adapters" },
+        "queryNoSplit(uint256,address,address,uint8[])": { "notice": "Query specified adapters" },
+        "recoverERC20(address,uint256)": { "notice": "Recover ERC20 from contract" },
+        "recoverNATIVE(uint256)": { "notice": "Recover native asset from contract" },
+        "swapNoSplitToNATIVEWithPermit((uint256,uint256,address[],address[]),address,uint256,uint256,uint8,bytes32,bytes32)": {
+          "notice": "Swap token to NATIVE without the need to approve the first token"
+        },
+        "swapNoSplitWithPermit((uint256,uint256,address[],address[]),address,uint256,uint256,uint8,bytes32,bytes32)": {
+          "notice": "Swap token to token without the need to approve the first token"
+        }
+      },
+      "version": 1
+    }
+  },
+  "settings": {
+    "compilationTarget": { "src/contracts/SummitRouter.sol": "SummitRouter" },
+    "evmVersion": "istanbul",
+    "libraries": {},
+    "metadata": { "bytecodeHash": "ipfs" },
+    "optimizer": { "enabled": true, "runs": 999 },
+    "remappings": []
+  },
+  "sources": {
+    "@openzeppelin/contracts/access/AccessControl.sol": {
+      "keccak256": "0x0dd6e52cb394d7f5abe5dca2d4908a6be40417914720932de757de34a99ab87f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://dc117ce50ea746cab6b97ed1a1facee17a715ae0cb95d67b943dacbaf15176fb",
+        "dweb:/ipfs/QmYRZ2UGNYwsHwfNu7Wjr8L2j1LBZ1mKv6NvbwgterYMXc"
+      ]
+    },
+    "@openzeppelin/contracts/access/IAccessControl.sol": {
+      "keccak256": "0x59ce320a585d7e1f163cd70390a0ef2ff9cec832e2aa544293a00692465a7a57",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://bb2c137c343ef0c4c7ce7b18c1d108afdc9d315a04e48307288d2d05adcbde3a",
+        "dweb:/ipfs/QmUxhrAQM3MM3FF5j7AtcXLXguWCJBHJ14BRdVtuoQc8Fh"
+      ]
+    },
+    "@openzeppelin/contracts/utils/Context.sol": {
+      "keccak256": "0xa92e4fa126feb6907daa0513ddd816b2eb91f30a808de54f63c17d0e162c3439",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://a367861093b74443b137564d3f3c472f70bcf114739e62059c939f25e315706c",
+        "dweb:/ipfs/Qmd7JMpcxD9RuQjK3uM3EzJUgSqdN8vzp8eytEiuwxQJ6h"
+      ]
+    },
+    "@openzeppelin/contracts/utils/Strings.sol": {
+      "keccak256": "0x3088eb2868e8d13d89d16670b5f8612c4ab9ff8956272837d8e90106c59c14a0",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://b81d9ff6559ea5c47fc573e17ece6d9ba5d6839e213e6ebc3b4c5c8fe4199d7f",
+        "dweb:/ipfs/QmPCW1bFisUzJkyjroY3yipwfism9RRCigCcK1hbXtVM8n"
+      ]
+    },
+    "@openzeppelin/contracts/utils/introspection/ERC165.sol": {
+      "keccak256": "0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d",
+        "dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43"
+      ]
+    },
+    "@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+      "keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+        "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
+      ]
+    },
+    "@openzeppelin/contracts/utils/math/Math.sol": {
+      "keccak256": "0xe4455ac1eb7fc497bb7402579e7b4d64d928b846fce7d2b6fde06d366f21c2b3",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://cc8841b3cd48ad125e2f46323c8bad3aa0e88e399ec62acb9e57efa7e7c8058c",
+        "dweb:/ipfs/QmSqE4mXHA2BXW58deDbXE8MTcsL5JSKNDbm23sVQxRLPS"
+      ]
+    },
+    "@openzeppelin/contracts/utils/math/SignedMath.sol": {
+      "keccak256": "0xf92515413956f529d95977adc9b0567d583c6203fc31ab1c23824c35187e3ddc",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://c50fcc459e49a9858b6d8ad5f911295cb7c9ab57567845a250bf0153f84a95c7",
+        "dweb:/ipfs/QmcEW85JRzvDkQggxiBBLVAasXWdkhEysqypj9EaB6H2g6"
+      ]
+    },
+    "@openzeppelin/contracts/utils/structs/EnumerableSet.sol": {
+      "keccak256": "0x9f4357008a8f7d8c8bf5d48902e789637538d8c016be5766610901b4bba81514",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://20bf19b2b851f58a4c24543de80ae70b3e08621f9230eb335dc75e2d4f43f5df",
+        "dweb:/ipfs/QmSYuH1AhvJkPK8hNvoPqtExBcgTB42pPRHgTHkS5c5zYW"
+      ]
+    },
+    "src/contracts/SummitRouter.sol": {
+      "keccak256": "0xa8b7f0a9417e36467efe8061c3addb5d7825fb64d8c21182359ba2dc6e66cc11",
+      "license": "GPL-3.0-only",
+      "urls": [
+        "bzz-raw://4f18cf983f19bf69ed4bf00e2e686578fc648cdc9cab17d3d5f7743256742709",
+        "dweb:/ipfs/QmeidTJbQAjJQtxzvFDVHFgxNJQf3nC9f5W4pXLCc46S7N"
+      ]
+    },
+    "src/contracts/interface/IAdapter.sol": {
+      "keccak256": "0x7efd1e561a2a064daefd8d690518f6cb23b83fbf6da172030c0c31fd8dafb073",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://035d57499365f32f6513bd4d52016b1cd75cb6dae0954acb4ad146362b092c9b",
+        "dweb:/ipfs/QmaE3Lhi4BVtU3WaghDgFrbmHVBZkr9YtKjSE7SDLKBREa"
+      ]
+    },
+    "src/contracts/interface/IBlast.sol": {
+      "keccak256": "0xdde888d7edc290762d82e33b6ab15cd3d47e04a5c7c577bee4c10c997dcd93f1",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://5f1c5d9c1cd1b8f50532e3fb8834047ebe031390a8c328ca5fd02d592b8a5bd9",
+        "dweb:/ipfs/QmdHfFtf2btErQwjhMjNhmieoZcsgoeC7XpQhadRxT58ht"
+      ]
+    },
+    "src/contracts/interface/IERC20.sol": {
+      "keccak256": "0x8332a2b87ff073289f907f1bdf37d64c950d8df6f080c62eae31856eae046a34",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://111bb94bc06af496e35b08a8e2093b9b082db8fb1bbdfaeece13a67484061dc9",
+        "dweb:/ipfs/QmNUi7hNB84aBLwPSLNo6QxL8czVTFNzjg1v2vb5pTkLwy"
+      ]
+    },
+    "src/contracts/interface/ISummitRouter.sol": {
+      "keccak256": "0x9dfdf99bb6c3bb2838c95c5a08ff78ed06ec53232575af4af59ac624b1ece1f4",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://b1033c84705c8af38d9a9726cf21977e1f3675d5352780313fc976f72237251e",
+        "dweb:/ipfs/QmbKD94y5JFCeh59DijWWbYfiBRXFvp9aVLxJq8jviX9v3"
+      ]
+    },
+    "src/contracts/interface/ISummitVolumeAdapter.sol": {
+      "keccak256": "0x9be509777bd7167113bec452a60663df299039446070339400016702ceb62740",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://09e9a4306400531cdb9da1e0198e1985efb274d7c19e99e83447b5103217e5cf",
+        "dweb:/ipfs/QmVpFkLiCRtmJAQLaFvpHwhdKyE2F2HPcxKhQrdvhnwFdT"
+      ]
+    },
+    "src/contracts/interface/IWETH.sol": {
+      "keccak256": "0x7b31ca489d1bdf6631d5cf8c6f8ff9dc4a5c881d801a525f4e592a6884b9d2ad",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://65bcc0f64861bc79ba87e23373d2e49b7acfc9eef03515a21d0ef355dae4236b",
+        "dweb:/ipfs/Qmb9WbsQf2kQSa4oNd2bMwsb7gQ6j8ffH8HQFkB5EjSrPB"
+      ]
+    },
+    "src/contracts/lib/Maintainable.sol": {
+      "keccak256": "0xd16da7dc74a778bd150b5580d78ed18bdebdb159e6afddc7470011178dc261a8",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://2de5e1bd47491f35d933303698e0531965b32936879c00d877eb7f2d99b11cfe",
+        "dweb:/ipfs/QmVUBTcub6iBGa8EcApyfd5uX8PWpfVyqRgXYZYV5sLW7B"
+      ]
+    },
+    "src/contracts/lib/Recoverable.sol": {
+      "keccak256": "0xf435d3638a5642649b0c2d236c7c4975ffc32a1f883ff116324407a0bb683fbe",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://df836163eba79f95e55deddee4d3038e3bf6153d023644f6ad81914a384fca15",
+        "dweb:/ipfs/QmZYqQDN1RraV4oEwJYKwEKp8Du4qWhYWssoZY8UnaBySb"
+      ]
+    },
+    "src/contracts/lib/SafeERC20.sol": {
+      "keccak256": "0x2d77601f615804eb7471002f23f9a4593f86ac295e7353c2e7545f51d4f81728",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://587682afca9226a1b032c66bcc536d191dc7d1cc91fee950278bad70d46b4fa1",
+        "dweb:/ipfs/QmPC5y2N2gLAkpJgHmgwHdDH6d3oNPLFVqWCqUhiKNZJip"
+      ]
+    },
+    "src/contracts/lib/SummitViewUtils.sol": {
+      "keccak256": "0x11ce7c9dbf319d71edec9e3c1fb0b81bcdf5a2b5d206ad34aae44e63b58e6b1d",
+      "license": "GPL-3.0-only",
+      "urls": [
+        "bzz-raw://06d6ad638d5a7afce12dce35f2750c9d7ae344bf5b2e6afbebda730c5ded657a",
+        "dweb:/ipfs/Qmd49pVMEaenV5pPJAudfti3KtK1Yt5nHucQDX5uuBMw66"
+      ]
+    },
+    "src/contracts/lib/TypeConversion.sol": {
+      "keccak256": "0xa3a67bf37fbab7fd2edd745d8d1d1e4c4c18fb5d1c2a2c84af10e00e28caa165",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://c8af26440429564d3d4f85b0d82bfe2902fb1294a79465b3207c049c5d0ef391",
+        "dweb:/ipfs/Qmf6tUbyBVgLZtXvB5GQ7vb56t2LYFb36r1L9DsicdV3X5"
+      ]
+    }
+  },
+  "version": 1
+}

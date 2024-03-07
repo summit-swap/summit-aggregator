@@ -6,8 +6,11 @@ require("@nomicfoundation/hardhat-chai-matchers");
 require("@nomicfoundation/hardhat-network-helpers");
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-gas-reporter");
+const tdly = require("@tenderly/hardhat-tenderly");
+tdly.setup();
 
 // Tasks
+require("./tasks/tenderly-verify");
 require("./tasks/test-queries");
 require("./tasks/update-adapters-2");
 require("./tasks/check-bal");
@@ -158,6 +161,11 @@ module.exports = {
       url: FANTOM_RPC,
       accounts: [FANTOM_PK_DEPLOYER],
     },
+    tenderly: {
+      chainId: 81457,
+      url: "https://rpc.tenderly.co/fork/3329a3e2-5962-4652-b92e-f8257748af8e",
+      accounts: [FANTOM_PK_DEPLOYER],
+    },
   },
   paths: {
     deployments: "./src/deployments",
@@ -181,5 +189,11 @@ module.exports = {
     showTimeSpent: true,
     enabled: false,
     gasPrice: 225,
+  },
+  tenderly: {
+    project: "project",
+    username: "Halftone",
+    forkNetwork: "3329a3e2-5962-4652-b92e-f8257748af8e",
+    privateVerification: true,
   },
 };

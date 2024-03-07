@@ -29,7 +29,8 @@
     "ignite:blast": "npx hardhat ignition deploy ignition/modules/blast/Root.js --network blast",
     "update-token-bonuses": "npx hardhat update-token-bonuses --network blast",
     "update-user-boosts": "npx hardhat update-referrer-level-boosts --network blast",
-    "update-adapters": "npx hardhat update-adapters-2 --network blast"
+    "update-adapters": "npx hardhat update-adapters-2 --network blast",
+    "tenderly-verify": "npx hardhat tenderly-verify"
   },
   "author": "",
   "license": "ISC",
@@ -44,6 +45,7 @@
     "@nomicfoundation/hardhat-verify": "^2.0.4",
     "@nomicfoundation/ignition-core": "^0.14.0",
     "@openzeppelin/contracts": "^4.7.3",
+    "@tenderly/hardhat-tenderly": "^2.2.2",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^4.3.12",

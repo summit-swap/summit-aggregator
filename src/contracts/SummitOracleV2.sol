@@ -9,18 +9,13 @@ pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
 import "./interface/ISummitRouter.sol";
-import "./interface/IAdapter.sol";
 import "./interface/IERC20.sol";
-import "./interface/IWETH.sol";
-import "./lib/SafeERC20.sol";
 import "./lib/Maintainable.sol";
 import "./lib/SummitViewUtils.sol";
 import "./lib/Recoverable.sol";
-import "./lib/SafeERC20.sol";
 
 
 contract SummitOracleV2 is Maintainable, Recoverable {
-    using SafeERC20 for IERC20;
     using FormattedOfferUtils for FormattedOffer;
 
     ISummitRouter public ROUTER;
@@ -73,10 +68,11 @@ contract SummitOracleV2 is Maintainable, Recoverable {
         return 18;
       }
     }
-    function _getAllowance(address _user, address _token) internal view returns (uint256) {
+    function _getAllowance(address _user, address _token, address _spender) internal view returns (uint256) {
       if (_user == address(0)) return 0;
       if (_token == address(0)) return _user.balance;
-      return IERC20(_token).allowance(_user, address(ROUTER));
+      if (_spender == address(0)) return 0;
+      return IERC20(_token).allowance(_user, _spender);
     }
     function _getBalance(address _user, address _token) internal view returns (uint256) {
       if (_user == address(0)) return 0;
@@ -125,7 +121,6 @@ contract SummitOracleV2 is Maintainable, Recoverable {
       string name;
       uint256 decimals;
       uint256 bonus;
-      uint256 userAllowance;
       uint256 userBalance;
       uint256 price;
     }
@@ -138,24 +133,25 @@ contract SummitOracleV2 is Maintainable, Recoverable {
         decimals: _getDecimals(_token),
         bonus: _getBonus(_token),
         price: _nWnative > 0 ? getPriceNwNative(_token, _nWnative) : 0,
-        userAllowance: _getAllowance(_user, _token),
         userBalance: _getBalance(_user, _token)
       });
     }
 
-    function getSwapData(uint256 _amountIn, address _tokenIn, address _tokenOut, uint256 _maxSteps, uint256 _gasPrice)
+    function getSwapData(address _user, uint256 _amountIn, address _tokenIn, address _tokenOut, uint256 _maxSteps, uint256 _gasPrice)
       public view
-      returns (FormattedOffer memory offer)
+      returns (FormattedOffer memory offer, uint256 tokenInAllowance)
     {
-      return (
-        ROUTER.findBestPathWithGas(
-          _amountIn,
-          _tokenIn == address(0) ? address(WNATIVE) : _tokenIn,
-          _tokenOut == address(0) ? address(WNATIVE) : _tokenOut,
-          _maxSteps,
-          _gasPrice
-        )
+      offer = ROUTER.findBestPathWithGas(
+        _amountIn,
+        _tokenIn == address(0) ? address(WNATIVE) : _tokenIn,
+        _tokenOut == address(0) ? address(WNATIVE) : _tokenOut,
+        _maxSteps,
+        _gasPrice
       );
+      tokenInAllowance = 0;
+      if (offer.adapters.length > 0) {
+        tokenInAllowance = _getAllowance(_user, _tokenIn, offer.adapters[0]);
+      }
     }
 
 

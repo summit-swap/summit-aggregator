@@ -12,6 +12,10 @@ const SummitAdminModule = require("./admin/SummitAdmin");
 const BlasterSwapV2Module = require("./adapters/UniswapV2/BlasterSwapV2");
 const HyperBlastV2Module = require("./adapters/UniswapV2/HyperBlastV2");
 const BitconnectV2Module = require("./adapters/UniswapV2/BitconnectV2");
+const SummitOracleV2Module = require("./ecosystem/SummitOracleV2");
+const HyperBlastV2__2Module = require("./adapters/UniswapV2/HyperBlastV2__2");
+const HyperBlastV2__3Module = require("./adapters/UniswapV2/HyperBlastV2__3");
+const BlasterSwapV2__2Module = require("./adapters/UniswapV2/BlasterSwapV2__2");
 
 module.exports = buildModule("Root", (m) => {
   m.useModule(SummitVolumeAdapterLinkingModule);
@@ -30,4 +34,10 @@ module.exports = buildModule("Root", (m) => {
   m.useModule(BlasterSwapV2Module);
   m.useModule(HyperBlastV2Module);
   m.useModule(BitconnectV2Module);
+
+  m.useModule(SummitOracleV2Module);
+
+  m.useModule(HyperBlastV2__2Module);
+  m.useModule(HyperBlastV2__3Module);
+  m.useModule(BlasterSwapV2__2Module);
 });

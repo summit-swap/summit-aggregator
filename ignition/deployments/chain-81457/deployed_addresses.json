@@ -21,5 +21,9 @@
   "SummitAdmin#SummitAdmin": "0x4F2D04581b9c418CfbacefB9c8ab2B0e64362D0D",
   "BlasterSwapV2Adapter#BlasterSwapV2Adapter": "0x8C3dA9710ca9c1CcB9c02F6De430887D25323022",
   "BitconnectV2Adapter#BitconnectV2Adapter": "0x4c2760c267A0594708EAa6160EA45D6Cbd40C23F",
-  "HyperBlastV2Adapter#HyperBlastV2Adapter": "0x4220B9ad387B1B069a72A00D13fC701DD514a3B3"
+  "HyperBlastV2Adapter#HyperBlastV2Adapter": "0x4220B9ad387B1B069a72A00D13fC701DD514a3B3",
+  "SummitOracleV2#SummitOracleV2": "0x58AEF970E62EfDb46C5d4F37c844D4279398973a",
+  "HyperBlastV2Adapter__2#HyperBlastV2Adapter__2": "0xd74FdfA6270304F0E5917b29b8df5f21A4702b0E",
+  "HyperBlastV2Adapter__3#HyperBlastV2Adapter__3": "0x6E6f528007ceDBc34dc0C803483364922E880a75",
+  "BlasterSwapV2Adapter__2#BlasterSwapV2Adapter__2": "0xb7Cf0c65506eF321d8920F4Eaba83842070A2BEB"
 }
