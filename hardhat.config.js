@@ -11,6 +11,7 @@ const tdly = require("@tenderly/hardhat-tenderly");
 tdly.setup();
 
 // Tasks
+require("./tasks/update-V2-adapters");
 require("./tasks/tenderly-verify");
 require("./tasks/test-queries");
 require("./tasks/update-adapters-2");
@@ -154,7 +155,7 @@ module.exports = {
     blast: {
       chainId: 81457,
       url: BLAST_RPC,
-      gasPrice: 100000000,
+      gasPrice: 100000,
       accounts: [BLAST_PK_DEPLOYER],
     },
     fantom: {

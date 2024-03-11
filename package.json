@@ -27,9 +27,11 @@
     "ignite:fantom": "yarn ignite:buildparams:fantom && yarn ignite  --network fantom",
     "ignite:blast-test": "npx hardhat ignition deploy ignition/modules/blast-test --network blast-test",
     "ignite:blast": "npx hardhat ignition deploy ignition/modules/blast/Root.js --network blast",
+    "ignite:blast:V2": "npx hardhat ignition deploy ignition/modules/blast/V2/Root.js --network blast",
     "update-token-bonuses": "npx hardhat update-token-bonuses --network blast",
     "update-user-boosts": "npx hardhat update-referrer-level-boosts --network blast",
     "update-adapters": "npx hardhat update-adapters-2 --network blast",
+    "update-v2-adapters": "npx hardhat update-V2-adapters --network blast",
     "tenderly-verify": "npx hardhat tenderly-verify"
   },
   "author": "",

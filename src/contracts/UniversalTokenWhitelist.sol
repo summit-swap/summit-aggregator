@@ -1,185 +1,184 @@
-//
-//            __               ___ ___    __            _  
-//           (_  | | |\/| |\/|  |   |    (_ \    / /\  |_) 
-//           __) |_| |  | |  | _|_  |    __) \/\/ /--\ |   
-//
+// //
+// //            __               ___ ___    __            _
+// //           (_  | | |\/| |\/|  |   |    (_ \    / /\  |_)
+// //           __) |_| |  | |  | _|_  |    __) \/\/ /--\ |
+// //
 
-// SPDX-License-Identifier: GPL-3.0-only
-pragma solidity ^0.8.0;
+// // SPDX-License-Identifier: GPL-3.0-only
+// pragma solidity ^0.8.0;
 
+// import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+// import { IERC20, SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+// import { Maintainable } from "./lib/Maintainable.sol";
 
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "../interface/IERC20.sol";
-import "../lib/SafeERC20.sol";
-import "../lib/Maintainable.sol";
+// struct TokenTaxInfo {
+//     uint256 sellTax;
+//     uint256 buyTax;
+// }
 
-struct TokenTaxInfo {
-  uint256 sellTax;
-  uint256 buyTax;
-}
-struct const TokenDataMeta {
-  address submittedBy;
-  address confirmedBy;
-  uint256 lastUpdateTimestamp;
-}
-struct TokenData {
-  address token;
-  string symbol: 
-  string name;
-  uint256 decimals;
-  string iconUrl;
-  bool requiresBorderRadius;
-  string bannerUrl;
-  string[] socials;
-  string description;
-}
-struct TokenDataParams {
-  address token;
-  string iconUrl;
-  bool requiresBorderRadius;
-  string bannerUrl;
-  string[] socials;
-  string description;
-}
+// struct TokenDataMeta {
+//     address submittedBy;
+//     address confirmedBy;
+//     uint256 lastUpdateTimestamp;
+// }
+// struct TokenData {
+//     address token;
+//     string symbol;
+//     string name;
+//     uint256 decimals;
+//     string iconUrl;
+//     bool requiresBorderRadius;
+//     string bannerUrl;
+//     string[] socials;
+//     string description;
+// }
+// struct TokenDataParams {
+//     address token;
+//     string iconUrl;
+//     bool requiresBorderRadius;
+//     string bannerUrl;
+//     string[] socials;
+//     string description;
+// }
 
-contract UniversalTokenWhitelist is Maintainable {
-  using SafeERC20 for IERC20;
-  using EnumerableSet for EnumerableSet.AddressSet;
+// contract UniversalTokenWhitelist is Maintainable {
+//     using SafeERC20 for IERC20;
+//     using EnumerableSet for EnumerableSet.AddressSet;
 
-  EnumerableSet.AddressSet whitelistedTokens;
-  mapping(address => TokenData) public tokenData;
+//     EnumerableSet.AddressSet whitelistedTokens;
+//     mapping(address => TokenData) public tokenData;
 
-  EnumerableSet.AddressSet submittedTokens;
-  mapping(address => TokenDataParams) public tokenSubmissionData;
+//     EnumerableSet.AddressSet submittedTokens;
+//     mapping(address => TokenDataParams) public tokenSubmissionData;
 
-  mapping(address => TokenDataMeta) public tokenDataMeta;
+//     mapping(address => TokenDataMeta) public tokenDataMeta;
 
-  mapping(address => bool) public whitelistedSubmitters;
-  
-  error AlreadySubmitted();
-  error NoSubmitted();
-  error NotSubmitter();
-  error NotPermitted();
+//     mapping(address => bool) public whitelistedSubmitters;
 
-  // ADMIN
+//     error AlreadySubmitted();
+//     error NoSubmitted();
+//     error NotSubmitter();
+//     error NotPermitted();
+//     error NoSubmission();
 
-  function whitelistSubmitter(address _submitter, bool _whitelist) public onlyMaintainer {
-    whitelistedSubmitters[_submitter] = _whitelist;
-  }
-  
-  // CORE
+//     // ADMIN
 
-  function createSubmission(TokenDataParams memory _params) public {
-    if (!whitelistedSubmitters[msg.sender]) revert NotPermitted();
-    if (submittedTokens.contains(_params.token)) revert AlreadySubmitted();
+//     function whitelistSubmitter(address _submitter, bool _whitelist) public onlyMaintainer {
+//         whitelistedSubmitters[_submitter] = _whitelist;
+//     }
 
-    submittedTokens.add(_params.token);
-    tokenSubmissionData[tokenData.address] = _params;
+//     // CORE
 
-    tokenDataMeta[_params.token].submittedBy = msg.sender;
-    tokenDataMeta[_params.token].lastUpdateTimestamp = block.timestamp;
-  }
+//     function createSubmission(TokenDataParams memory _params) public {
+//         if (!whitelistedSubmitters[msg.sender]) revert NotPermitted();
+//         if (submittedTokens.contains(_params.token)) revert AlreadySubmitted();
 
-  function updateSubmission(TokenDataParams memory _params) public {
-    if (!whitelistedSubmitters[msg.sender]) revert NotPermitted();
-    if (!submittedTokens.contains(_params.token)) revert NoSubmission();
-    if (tokenDataMeta[_params.token].submittedBy != msg.sender) revert NotSubmitter();
+//         submittedTokens.add(_params.token);
+//         tokenSubmissionData[tokenData.token] = _params;
 
-    tokenSubmissionData[_params.address] = _params;
+//         tokenDataMeta[_params.token].submittedBy = msg.sender;
+//         tokenDataMeta[_params.token].lastUpdateTimestamp = block.timestamp;
+//     }
 
-    tokenDataMeta.lastUpdateTimestamp = block.timestamp;
-  }
+//     function updateSubmission(TokenDataParams memory _params) public {
+//         if (!whitelistedSubmitters[msg.sender]) revert NotPermitted();
+//         if (!submittedTokens.contains(_params.token)) revert NoSubmission();
+//         if (tokenDataMeta[_params.token].submittedBy != msg.sender) revert NotSubmitter();
 
-  function confirmSubmission(address _token) public onlyMaintainer {
-    whitelistedTokens.add(_token);
-    tokenData[_token] = tokenSubmissionData[_token];
+//         tokenSubmissionData[_params.address] = _params;
 
-    submittedTokens.remove(_token);
-    delete tokenSubmissionData[_token];
+//         tokenDataMeta.lastUpdateTimestamp = block.timestamp;
+//     }
 
-    tokenDataMeta[_token].confirmedBy = msg.sender;
-  }
+//     function confirmSubmission(address _token) public onlyMaintainer {
+//         whitelistedTokens.add(_token);
+//         tokenData[_token] = tokenSubmissionData[_token];
 
-  function removeTokenSubmission(address _token) public onlyMaintainer {
-    submittedTokens.remove(_token);
-    delete tokenSubmissionData[_token];
-  }
+//         submittedTokens.remove(_token);
+//         delete tokenSubmissionData[_token];
 
-  function removeToken(address _token) public onlyMaintainer {
-    whitelistedTokens.remove(_token);
-    delete tokenData[_token];
-  }
+//         tokenDataMeta[_token].confirmedBy = msg.sender;
+//     }
 
-  function addToken(TokenData memory _tokenData) public onlyMaintainer {
-    if (_tokenData.submittedBy != msg.sender) revert NotSubmitter();
+//     function removeTokenSubmission(address _token) public onlyMaintainer {
+//         submittedTokens.remove(_token);
+//         delete tokenSubmissionData[_token];
+//     }
 
-    whitelistedTokens.add(_tokenData.token);
-    tokenData[_tokenData.token] = _tokenData;
-  }
+//     function removeToken(address _token) public onlyMaintainer {
+//         whitelistedTokens.remove(_token);
+//         delete tokenData[_token];
+//     }
 
-  // UTILS
+//     function addToken(TokenData memory _tokenData) public onlyMaintainer {
+//         if (_tokenData.submittedBy != msg.sender) revert NotSubmitter();
 
-  function _getSymbol(address _token) internal view returns (string memory) {
-    if (_token == address(0)) return "";
-    try IERC20(_token).symbol() returns (string memory sym) {
-      return sym;
-    } catch {
-      return "";
-    }
-  }
+//         whitelistedTokens.add(_tokenData.token);
+//         tokenData[_tokenData.token] = _tokenData;
+//     }
 
-  function _getName(address _token) internal view returns (string memory) {
-    if (_token == address(0)) return "";
-    try IERC20(_token).name() returns (string memory name) {
-      return name;
-    } catch {
-      return "";
-    }
-  }
+//     // UTILS
 
-  function _getDecimals(address _token) internal view returns (uint8) {
-    if (_token == address(0)) return 18;
-    try IERC20(_token).decimals() returns (uint8 dec) {
-      return dec;
-    } catch {
-      return 18;
-    }
-  }
+//     function _getSymbol(address _token) internal view returns (string memory) {
+//         if (_token == address(0)) return "";
+//         try IERC20(_token).symbol() returns (string memory sym) {
+//             return sym;
+//         } catch {
+//             return "";
+//         }
+//     }
 
-  function _transformTokenSubmissionData{tokenSubmissionData memory _params} internal view returns (TokenData memory updatedTokenData) {
-    // Use existing tokenData as base
-    updatedTokenData = tokenData[_params.token];
+//     function _getName(address _token) internal view returns (string memory) {
+//         if (_token == address(0)) return "";
+//         try IERC20(_token).name() returns (string memory name) {
+//             return name;
+//         } catch {
+//             return "";
+//         }
+//     }
 
-    if (bytes(updatedTokenData.symbol).length == 0) {
-      // Fetch and set contract metadata
-      updatedTokenData.symbol = _getSymbol(_params.token);
-      updatedTokenData.name = _getName(_params.token);
-      updatedTokenData.decimals = _getDecimals(_params.token);
-    }
+//     function _getDecimals(address _token) internal view returns (uint8) {
+//         if (_token == address(0)) return 18;
+//         try IERC20(_token).decimals() returns (uint8 dec) {
+//             return dec;
+//         } catch {
+//             return 18;
+//         }
+//     }
 
-    updatedTokenData.token = _params.token;
-    updatedTokenData.iconUrl = _params.iconUrl;
-    updatedTokenData.requiresBorderRadius = _params.requiresBorderRadius;
-    updatedTokenData.bannerUrl = _params.bannerUrl;
-    updatedTokenData.socials = _params.socials;
-    updatedTokenData.description = _params.description;
-  }
+//     // function _transformTokenSubmissionData(
+//     //     TokenSubmissionData memory _params
+//     // ) internal view returns (TokenData memory updatedTokenData) {
+//     //     // Use existing tokenData as base
+//     //     updatedTokenData = tokenData[_params.token];
 
-  // VIEW
+//     //     if (bytes(updatedTokenData.symbol).length == 0) {
+//     //         // Fetch and set contract metadata
+//     //         updatedTokenData.symbol = _getSymbol(_params.token);
+//     //         updatedTokenData.name = _getName(_params.token);
+//     //         updatedTokenData.decimals = _getDecimals(_params.token);
+//     //     }
 
-  function isWhitelisted(address _token) public view returns (bool) {
-    return whitelistedTokens.contains(_token);
-  }
+//     //     updatedTokenData.token = _params.token;
+//     //     updatedTokenData.iconUrl = _params.iconUrl;
+//     //     updatedTokenData.requiresBorderRadius = _params.requiresBorderRadius;
+//     //     updatedTokenData.bannerUrl = _params.bannerUrl;
+//     //     updatedTokenData.socials = _params.socials;
+//     //     updatedTokenData.description = _params.description;
+//     // }
 
-  function getWhitelistedToken(address _token) public view returns (TokenData memory) {
-    return tokenData[_token];
+//     // VIEW
 
-  }
+//     function isWhitelisted(address _token) public view returns (bool) {
+//         return whitelistedTokens.contains(_token);
+//     }
 
-  function getWhitelistedTokens() public view returns (address[] memory) {
+//     function getWhitelistedToken(address _token) public view returns (TokenData memory) {
+//         return tokenData[_token];
+//     }
 
-  }
-  function getWhitelistedTokensData() public view returns (TokenData[] memory) {
-    return whitelistedTokens.values();
-  }
-}
+//     function getWhitelistedTokens() public view returns (address[] memory) {}
+//     function getWhitelistedTokensData() public view returns (TokenData[] memory) {
+//         return whitelistedTokens.values();
+//     }
+// }

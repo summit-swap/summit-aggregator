@@ -26,5 +26,9 @@
   "HyperBlastV2Adapter__2#HyperBlastV2Adapter__2": "0xd74FdfA6270304F0E5917b29b8df5f21A4702b0E",
   "HyperBlastV2Adapter__3#HyperBlastV2Adapter__3": "0x6E6f528007ceDBc34dc0C803483364922E880a75",
   "BlasterSwapV2Adapter__2#BlasterSwapV2Adapter__2": "0xb7Cf0c65506eF321d8920F4Eaba83842070A2BEB",
-  "SummitOracleV3#SummitOracleV3": "0x5e6A382B54e8C4F689B7e28481E0F15BBF9A81f2"
+  "SummitOracleV3#SummitOracleV3": "0x5e6A382B54e8C4F689B7e28481E0F15BBF9A81f2",
+  "HyperBlastV2Adapter__SSV2#HyperBlastV2Adapter__SSV2": "0x750D477F09542cE3B5A2d3B2C54308C67fD87886",
+  "SummitRouterV2__SSV2#SummitRouterV2__SSV2": "0x175151D4B9b23E00130f1fCeF5EDB8F806Fc29c5",
+  "SummitOracleV3__SSV2#SummitOracleV3__SSV2": "0x16abABE2C69e29a847A7Cb9DcA01866c9ceFB9bf",
+  "ThrusterV3Adapter__SSV2#ThrusterV3Adapter__SSV2": "0x150E7E68C4b8D021b39f53c7f1E36f74CFeb6A10"
 }

@@ -1,5 +1,6 @@
-const prefixedContractName = (contractName) => {
-  return `${contractName}#${contractName}`;
+const prefixedContractName = (contractName, isV2) => {
+  const version = isV2 ? "__SSV2" : "";
+  return `${contractName}${version}#${contractName}${version}`;
 };
 
 const getDeployedAddresses = async (networkId) => {
@@ -11,9 +12,15 @@ const getDeployedAddresses = async (networkId) => {
   }
 };
 
-const getDeployedContractAddress = async (networkId, contractName) => {
+const getDeployedContractAddress = async (networkId, contractName, isV2) => {
   const deployedAddresses = await getDeployedAddresses(networkId);
-  const address = deployedAddresses[prefixedContractName(contractName)];
+  const prefixedContract = prefixedContractName(contractName, isV2);
+  console.log({
+    deployedAddresses,
+    contractName,
+    prefixedContract,
+  });
+  const address = deployedAddresses[prefixedContract];
   if (address == null) {
     throw new Error(`Can't find "${contractName}" deployment address for networkID: "${networkId}"`);
   }
@@ -22,8 +29,8 @@ const getDeployedContractAddress = async (networkId, contractName) => {
 
 module.exports.getDeployedContractAddress = getDeployedContractAddress;
 
-const getDeployedArtifact = async (networkId, contractName) => {
-  path = `../ignition/deployments/chain-${networkId}/artifacts/${prefixedContractName(contractName)}.json`;
+const getDeployedArtifact = async (networkId, contractName, isV2) => {
+  path = `../ignition/deployments/chain-${networkId}/artifacts/${prefixedContractName(contractName, isV2)}.json`;
   try {
     return require(path);
   } catch {
@@ -31,10 +38,10 @@ const getDeployedArtifact = async (networkId, contractName) => {
   }
 };
 
-module.exports.getDeployedContract = async (networkId, contractName) => {
-  const artifact = await getDeployedArtifact(networkId, contractName);
+module.exports.getDeployedContract = async (networkId, contractName, isV2) => {
+  const artifact = await getDeployedArtifact(networkId, contractName, isV2);
 
-  const contractAddress = await getDeployedContractAddress(networkId, contractName);
+  const contractAddress = await getDeployedContractAddress(networkId, contractName, isV2);
 
   return ethers.getContractAt(artifact.contractName, contractAddress);
 };

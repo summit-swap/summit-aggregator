@@ -1,7 +1,9 @@
 const adaptersAllChain = require("../config/adapters");
+const adaptersV2AllChain = require("../config/V2adapters");
 const { getDeployedContractAddress } = require("./deploymentFetcher");
 
-const getAdapterConfigs = async (networkId) => {
+const getAdapterConfigs = async (networkId, isV2) => {
+  if (isV2) return adaptersV2AllChain[networkId];
   return adaptersAllChain[networkId];
 };
 
@@ -26,20 +28,22 @@ module.exports.logExistingTokenBonusMultipliers = async (SummitRouter, networkId
   });
 };
 
-const getAdapterAddressesFromConfig = async (networkId) => {
-  const adapters = await getAdapterConfigs(networkId);
+const getAdapterAddressesFromConfig = async (networkId, isV2) => {
+  const adapters = await getAdapterConfigs(networkId, isV2);
 
   console.log({
     adapters,
   });
 
   return Promise.all(
-    Object.keys(adapters).map(async (contractName) => getDeployedContractAddress(networkId, contractName))
+    Object.keys(adapters).map(async (contractName) => getDeployedContractAddress(networkId, contractName, isV2))
   );
 };
 
-module.exports.updateAdapters = async (SummitRouter, deployer, networkId) => {
-  const adapterAddresses = await getAdapterAddressesFromConfig(networkId);
+module.exports.updateAdapters = async (SummitRouter, deployer, networkId, isV2) => {
+  const adapterAddresses = await getAdapterAddressesFromConfig(networkId, isV2);
+
+  console.log({ adapterAddresses });
 
   await SummitRouter.connect(deployer).setAdapters(adapterAddresses).then(finale);
 };
