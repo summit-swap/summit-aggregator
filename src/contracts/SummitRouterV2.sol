@@ -411,7 +411,7 @@ contract SummitRouterV2 is Maintainable, Recoverable, ISummitRouter {
             // All adapters should transfer output token to the following target
             // All targets are the next adapters target, expect for the last swap where tokens are sent out
             targetAddress = i < _trade.adapters.length - 1
-                ? IAdapterV2(_trade.adapters[i + 1]).getTransferTarget(_trade.path[i], _trade.path[i + 1])
+                ? IAdapterV2(_trade.adapters[i + 1]).getTransferTarget(_trade.path[i + 1], _trade.path[i + 2])
                 : _to;
             IAdapterV2(_trade.adapters[i]).swap(
                 amounts[i],

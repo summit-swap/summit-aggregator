@@ -32,7 +32,9 @@
     "update-user-boosts": "npx hardhat update-referrer-level-boosts --network blast",
     "update-adapters": "npx hardhat update-adapters-2 --network blast",
     "update-v2-adapters": "npx hardhat update-V2-adapters --network blast",
-    "tenderly-verify": "npx hardhat tenderly-verify"
+    "tenderly-verify": "npx hardhat tenderly-verify",
+    "anvil:blast": "anvil --fork-url https://rpc.blast.io",
+    "cast:run:tx": "cast run"
   },
   "author": "",
   "license": "ISC",

@@ -26,8 +26,8 @@ task("update-hop-token-prices", "Updates SummitRouter hop token prices using Sum
   };
 
   const mults = [
-    multifier(3409.82), // ETH
-    multifier(3409.82), // WETH
+    multifier(3984), // ETH
+    multifier(3984), // WETH
     multifier(1), // USDB
   ];
 
